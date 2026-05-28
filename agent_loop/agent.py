@@ -38,7 +38,7 @@ class ToolExecutor(Protocol):
     def name(self) -> str:
         ...
 
-    def execute(self, call_id: str, args: Dict[str, Any]) -> Any:
+    async def execute(self, args: dict, context: dict | None = None) -> Any:
         ...
 
 
@@ -143,7 +143,7 @@ class Agent:
             yield ToolCallDeltaEvent(call_id=call_id, delta=f"Executing {tool_name}...")
 
             try:
-                result = _resolve(executor.execute(call_id, args))
+                result = _resolve(executor.execute(args))
             except Exception as exc:
                 result = {}
                 error = str(exc)

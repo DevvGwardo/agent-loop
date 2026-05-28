@@ -33,13 +33,15 @@ class ReadExecutor(ToolExecutor):
     # Execute
     # ------------------------------------------------------------------
 
-    async def execute(self, args: dict, context: dict) -> dict:
-        file_path: str = args.get("path", "")
+    async def execute(self, args: dict | None = None, context: dict | None = None) -> dict:
+        file_path: str = ""
+        if args:
+            file_path = args.get("path", "")
         if not file_path:
             return {"content": "", "total_lines": 0, "success": False, "error": "No path provided"}
 
         # Resolve relative to working directory from context if provided
-        working_dir = context.get("working_directory")
+        working_dir = context.get("working_directory") if context else None
         if working_dir and not os.path.isabs(file_path):
             file_path = os.path.join(working_dir, file_path)
 

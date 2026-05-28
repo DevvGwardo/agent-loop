@@ -38,8 +38,12 @@ class EditExecutor(ToolExecutor):
     # Execute
     # ------------------------------------------------------------------
 
-    async def execute(self, args: dict, context: dict) -> dict:
-        mode: str = args.get("mode", "stream_content")
+    async def execute(self, args: dict | None = None, context: dict | None = None) -> dict:
+        if context is None:
+            context = {}
+        mode: str = ""
+        if args:
+            mode = args.get("mode", "stream_content")
 
         if mode == "str_replace":
             return await self._str_replace(args, context)

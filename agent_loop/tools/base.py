@@ -31,14 +31,16 @@ class ToolExecutor(ABC):
         return self.__class__.__doc__ or ""
 
     @abstractmethod
-    async def execute(self, args: dict, context: dict) -> dict:
+    async def execute(self, args: dict | None = None, context: dict | None = None) -> dict:
         """Run the tool with *args* and return a result dict.
 
         Parameters
         ----------
+        call_id : str
+            Unique identifier for this tool invocation.
         args : dict
             Tool-specific arguments parsed from the model.
-        context : dict
+        context : dict, optional
             Shared execution context (e.g. ``{"working_directory": "/tmp"}``).
 
         Returns

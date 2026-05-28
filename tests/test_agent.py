@@ -29,8 +29,8 @@ class _MockExecutor:
     def name(self) -> str:
         return self._name
 
-    async def execute(self, call_id: str, args: Dict[str, Any]) -> Dict[str, Any]:
-        self.executed_calls.append((call_id, args))
+    async def execute(self, args: dict | None = None, context: dict | None = None) -> Dict[str, Any]:
+        self.executed_calls.append((str(args), args or {}))
         if self._fail:
             raise RuntimeError(f"{self._name} failed deliberately")
         return {"success": True, "output": f"{self._name} executed: {args!r}"}

@@ -50,14 +50,22 @@ class ShellExecutor(ToolExecutor):
     # Execute
     # ------------------------------------------------------------------
 
-    async def execute(self, args: dict, context: dict) -> dict:
-        command: str = args.get("command", "")
+    async def execute(self, args: dict | None = None, context: dict | None = None) -> dict:
+        command: str = ""
+        if args:
+            command = args.get("command", "")
         if not command:
             return {"exit_code": 1, "stdout": "", "stderr": "No command provided", "success": False}
 
-        working_directory: str | None = args.get("working_directory") or context.get("working_directory")
-        timeout: int | None = args.get("timeout")
-        env_overrides: dict | None = args.get("env")
+        working_directory: str | None = None
+        timeout: int | None = None
+        env_overrides: dict | None = None
+        if args:
+            working_directory = args.get("working_directory")
+            timeout = args.get("timeout")
+            env_overrides = args.get("env")
+        if working_directory is None and context:
+            working_directory = context.get("working_directory")
 
         # Build environment
         env = dict(os.environ)

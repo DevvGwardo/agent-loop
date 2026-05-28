@@ -42,8 +42,10 @@ class WebFetchExecutor(ToolExecutor):
     # Execute
     # ------------------------------------------------------------------
 
-    async def execute(self, args: dict, context: dict) -> dict:
-        url: str = args.get("url", "")
+    async def execute(self, args: dict | None = None, context: dict | None = None) -> dict:
+        url: str = ""
+        if args:
+            url = args.get("url", "")
         if not url:
             return {"url": "", "markdown": "", "success": False, "error": "No url provided"}
 
