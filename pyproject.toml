@@ -1,0 +1,29 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "agent-loop"
+version = "0.1.0"
+description = "A clean reimplementation of an AI coding agent streaming protocol"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+keywords = ["ai", "agent", "streaming", "protocol", "coding-agent"]
+
+dependencies = [
+    "pydantic>=2.0",
+    "httpx",
+    "colorama",
+    "typer[all]",
+    "rich",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["agent_loop"]
