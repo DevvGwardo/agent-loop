@@ -135,6 +135,6 @@ avg = total_ms / num
 print(f"{'='*55}")
 print(f"  {'█'*max(1,int(avg/5)):<10} {'AVERAGE':<15} {avg:>8.1f}ms")
 print(f"  {'█'*max(1,int(total_ms/5)):<10} {'TOTAL':<15} {total_ms:>8.1f}ms")
-print(f"  {'⏱ Real time':<25} {time.perf_counter():.2f}s")
+print(f"  {'⏱ Real time':<25} {sum(r[1] for r in results):.2f}ms")
 print(f"{'='*55}")
 print(f"  🟢 {num} ops — PASS")

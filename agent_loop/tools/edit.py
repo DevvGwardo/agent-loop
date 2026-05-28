@@ -1,4 +1,6 @@
 """File write/patch executor with str_replace and stream_content modes."""
+from __future__ import annotations
+
 
 import os
 from pathlib import Path

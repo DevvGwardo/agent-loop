@@ -1,4 +1,6 @@
 """Abstract base class for all tool executors."""
+from __future__ import annotations
+
 
 from abc import ABC, abstractmethod
 

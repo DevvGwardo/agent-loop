@@ -1,4 +1,6 @@
 """Tool executor registry — exports all built-in tool executors."""
+from __future__ import annotations
+
 
 from .base import ToolExecutor
 from .shell import ShellExecutor

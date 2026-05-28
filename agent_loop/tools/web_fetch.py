@@ -1,4 +1,6 @@
 """Web page fetcher that returns markdown content with timeout/size limits."""
+from __future__ import annotations
+
 
 import re
 
