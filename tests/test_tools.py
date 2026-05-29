@@ -246,3 +246,58 @@ class TestWebFetchExecutor:
         # Should fail with some error (either httpx not installed or connection error)
         assert result["success"] is False
         assert result["error"]
+
+
+class TestGrepExecutor:
+    """Requires ripgrep (`brew install ripgrep`)."""
+
+    @pytest.mark.asyncio
+    async def test_name(self) -> None:
+        from agent_loop.tools.grep import GrepExecutor
+        exec_ = GrepExecutor()
+        assert exec_.name == "grep"
+
+    @pytest.mark.asyncio
+    async def test_args_schema(self) -> None:
+        from agent_loop.tools.grep import GrepExecutor
+        exec_ = GrepExecutor()
+        schema = exec_.args_schema()
+        assert "pattern" in schema.get("required", [])
+
+    @pytest.mark.asyncio
+    async def test_search_no_matches(self) -> None:
+        from agent_loop.tools.grep import GrepExecutor
+        exec_ = GrepExecutor()
+        result = await exec_.execute({"pattern": "XYZZY_NONEXISTENT_987654321", "path": "/dev/null"})
+        assert result.get("count") == 0
+
+
+class TestSkills:
+    def test_load_and_get(self) -> None:
+        from agent_loop.skills import SkillRegistry
+        reg = SkillRegistry()
+        reg.load_skill("test", "do something")
+        skill = reg.get_skill("test")
+        assert skill is not None
+        assert skill.name == "test"
+        assert skill.prompt == "do something"
+
+    def test_auto_load_filter(self) -> None:
+        from agent_loop.skills import SkillRegistry
+        reg = SkillRegistry()
+        reg.load_skill("auto1", "auto skill", auto_load=True)
+        reg.load_skill("manual", "manual skill", auto_load=False)
+        auto = reg.for_tool("shell")
+        assert len(auto) == 1
+        assert auto[0].name == "auto1"
+
+    def test_merge(self) -> None:
+        from agent_loop.skills import SkillRegistry
+        a = SkillRegistry()
+        b = SkillRegistry()
+        a.load_skill("shared", "from a")
+        b.load_skill("shared", "from b")
+        b.load_skill("unique", "only b")
+        a.merge(b)
+        assert a.get_skill("shared").prompt == "from b"  # b wins
+        assert a.get_skill("unique") is not None

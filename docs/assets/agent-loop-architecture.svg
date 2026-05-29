@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="760" viewBox="0 0 1600 760" role="img" aria-labelledby="title desc">
+  <title id="title">agent-loop architecture diagram</title>
+  <desc id="desc">A flow diagram showing request intake, planning, approval, dispatch, execution, streaming updates, completion, and supporting MCP cache and lazy context systems.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#071118"/>
+      <stop offset="100%" stop-color="#0c1722"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#27d7ff"/>
+      <stop offset="100%" stop-color="#18a8ff"/>
+    </linearGradient>
+    <linearGradient id="warm" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffd66d"/>
+      <stop offset="100%" stop-color="#ffb84d"/>
+    </linearGradient>
+    <filter id="softGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="
+        1 0 0 0 0
+        0 1 0 0 0
+        0 0 1 0 0
+        0 0 0 0.55 0" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <marker id="arrow" markerWidth="14" markerHeight="14" refX="10" refY="7" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L14,7 L0,14 z" fill="#8adfff"/>
+    </marker>
+    <marker id="arrowWarm" markerWidth="14" markerHeight="14" refX="10" refY="7" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L14,7 L0,14 z" fill="#ffcc6a"/>
+    </marker>
+    <style>
+      .label { font: 600 28px Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #e8f7ff; }
+      .small { font: 500 18px Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #a9c8d8; }
+      .tiny { font: 500 16px Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #9dc5d9; }
+      .node { fill: rgba(11, 26, 38, 0.96); stroke: rgba(110, 215, 255, 0.45); stroke-width: 2.5; }
+      .nodeWarm { fill: rgba(38, 27, 10, 0.96); stroke: rgba(255, 208, 94, 0.7); stroke-width: 2.5; }
+      .panel { fill: rgba(7, 17, 24, 0.82); stroke: rgba(110, 215, 255, 0.18); stroke-width: 1.5; }
+      .line { stroke: #8adfff; stroke-width: 4; fill: none; marker-end: url(#arrow); }
+      .lineWarm { stroke: #ffcc6a; stroke-width: 4; fill: none; marker-end: url(#arrowWarm); }
+      .dash { stroke-dasharray: 10 10; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="760" rx="36" fill="url(#bg)"/>
+  <circle cx="1060" cy="160" r="280" fill="#0d2433" opacity="0.2" filter="url(#softGlow)"/>
+  <circle cx="260" cy="590" r="250" fill="#11263b" opacity="0.18" filter="url(#softGlow)"/>
+
+  <text x="80" y="88" class="label">agent-loop architecture</text>
+  <text x="80" y="126" class="small">A streaming AI coding agent protocol with approval, execution, and cached tool metadata.</text>
+
+  <rect x="86" y="180" width="220" height="110" rx="22" class="node"/>
+  <text x="196" y="227" text-anchor="middle" class="label">LLM</text>
+  <text x="196" y="258" text-anchor="middle" class="tiny">user request</text>
+
+  <rect x="350" y="180" width="220" height="110" rx="22" class="node"/>
+  <text x="460" y="227" text-anchor="middle" class="label">Plan</text>
+  <text x="460" y="258" text-anchor="middle" class="tiny">reasoning + intent</text>
+
+  <rect x="614" y="180" width="260" height="110" rx="22" class="nodeWarm"/>
+  <text x="744" y="224" text-anchor="middle" class="label">ToolCall</text>
+  <text x="744" y="256" text-anchor="middle" class="tiny">description + approval</text>
+
+  <rect x="926" y="180" width="220" height="110" rx="22" class="node"/>
+  <text x="1036" y="227" text-anchor="middle" class="label">Gate</text>
+  <text x="1036" y="258" text-anchor="middle" class="tiny">approval check</text>
+
+  <rect x="1190" y="180" width="320" height="110" rx="22" class="node"/>
+  <text x="1350" y="224" text-anchor="middle" class="label">Dispatcher</text>
+  <text x="1350" y="256" text-anchor="middle" class="tiny">routes to the right executor</text>
+
+  <rect x="1120" y="388" width="390" height="132" rx="24" class="node"/>
+  <text x="1315" y="434" text-anchor="middle" class="label">Executor</text>
+  <text x="1315" y="468" text-anchor="middle" class="tiny">shell • read • edit • MCP • browser</text>
+  <text x="1315" y="494" text-anchor="middle" class="tiny">streams stdout, stderr, and progress</text>
+
+  <rect x="650" y="388" width="390" height="132" rx="24" class="node"/>
+  <text x="845" y="434" text-anchor="middle" class="label">Streaming updates</text>
+  <text x="845" y="468" text-anchor="middle" class="tiny">started</text>
+  <text x="845" y="494" text-anchor="middle" class="tiny">delta</text>
+  <text x="845" y="520" text-anchor="middle" class="tiny">completed</text>
+
+  <rect x="300" y="388" width="260" height="132" rx="24" class="nodeWarm"/>
+  <text x="430" y="434" text-anchor="middle" class="label">Result</text>
+  <text x="430" y="468" text-anchor="middle" class="tiny">ToolCallCompleted</text>
+  <text x="430" y="494" text-anchor="middle" class="tiny">next turn begins</text>
+
+  <rect x="86" y="388" width="180" height="132" rx="24" class="node"/>
+  <text x="176" y="434" text-anchor="middle" class="label">LLM</text>
+  <text x="176" y="468" text-anchor="middle" class="tiny">receives full result</text>
+  <text x="176" y="494" text-anchor="middle" class="tiny">and plans again</text>
+
+  <path d="M306 235 L350 235" class="line"/>
+  <path d="M570 235 L614 235" class="line"/>
+  <path d="M874 235 L926 235" class="line"/>
+  <path d="M1146 235 L1190 235" class="line"/>
+  <path d="M1350 290 L1350 388" class="line"/>
+  <path d="M1120 454 L1040 454" class="line"/>
+  <path d="M650 454 L560 454" class="lineWarm"/>
+  <path d="M300 454 L266 454" class="line"/>
+
+  <rect x="240" y="578" width="460" height="98" rx="20" class="panel"/>
+  <text x="270" y="620" class="label" font-size="24">MCP snapshot cache</text>
+  <text x="270" y="651" class="small">tool definitions are cached and refreshed only when generations change</text>
+
+  <rect x="786" y="578" width="560" height="98" rx="20" class="panel"/>
+  <text x="816" y="620" class="label" font-size="24">Lazy-loaded request context</text>
+  <text x="816" y="651" class="small">context sections load on demand so each turn sends only what is needed</text>
+
+  <path d="M700 628 C760 628, 790 628, 820 628" class="line dash"/>
+  <path d="M922 578 C922 536, 922 528, 922 520" class="line dash"/>
+  <path d="M470 578 C470 530, 470 520, 470 520" class="line dash"/>
+</svg>

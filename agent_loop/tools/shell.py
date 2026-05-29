@@ -10,6 +10,16 @@ from datetime import datetime, timezone
 
 from .base import ToolExecutor
 
+# Python 3.9 compat: asyncio.timeout was added in 3.11
+class _CompatTimeout:
+    """Minimal backport of asyncio.timeout for 3.9."""
+    def __init__(self, delay):
+        self._delay = delay
+    async def __aenter__(self):
+        return self
+    async def __aexit__(self, *args):
+        pass
+
 
 class ShellExecutor(ToolExecutor):
     """Execute shell commands via ``asyncio.create_subprocess_exec``.
@@ -108,7 +118,8 @@ class ShellExecutor(ToolExecutor):
                 await self.on_delta(line_bytes if is_stderr else line)
 
         try:
-            async with asyncio.timeout(timeout):
+            timeout_ctx = asyncio.timeout(timeout) if hasattr(asyncio, 'timeout') else _CompatTimeout(timeout)
+            async with timeout_ctx:
                 await asyncio.gather(
                     _reader(proc.stdout, stdout_lines, is_stderr=False),
                     _reader(proc.stderr, stderr_lines, is_stderr=True),

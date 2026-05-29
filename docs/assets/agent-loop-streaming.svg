@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="520" viewBox="0 0 1600 520" role="img" aria-labelledby="title desc">
+  <title id="title">agent-loop streaming lifecycle diagram</title>
+  <desc id="desc">A three-stage diagram showing the started, delta, and completed events emitted during tool execution.</desc>
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#071118"/>
+      <stop offset="100%" stop-color="#0b1a26"/>
+    </linearGradient>
+    <linearGradient id="stepA" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#22c7ff"/>
+      <stop offset="100%" stop-color="#13a2ff"/>
+    </linearGradient>
+    <linearGradient id="stepB" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#56e8d8"/>
+      <stop offset="100%" stop-color="#25c5b3"/>
+    </linearGradient>
+    <linearGradient id="stepC" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffd66d"/>
+      <stop offset="100%" stop-color="#ffb84d"/>
+    </linearGradient>
+    <marker id="arrow2" markerWidth="14" markerHeight="14" refX="10" refY="7" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L14,7 L0,14 z" fill="#8adfff"/>
+    </marker>
+    <filter id="glow2" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <style>
+      .title { font: 700 30px Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #ecfbff; }
+      .subtitle { font: 500 18px Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #a9c8d8; }
+      .head { font: 700 24px Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #e8f7ff; }
+      .body { font: 500 17px Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #a9c8d8; }
+      .card { fill: rgba(11, 26, 38, 0.96); stroke: rgba(110, 215, 255, 0.40); stroke-width: 2; }
+      .ringA { fill: rgba(34, 199, 255, 0.12); stroke: url(#stepA); stroke-width: 4; }
+      .ringB { fill: rgba(86, 232, 216, 0.12); stroke: url(#stepB); stroke-width: 4; }
+      .ringC { fill: rgba(255, 214, 109, 0.12); stroke: url(#stepC); stroke-width: 4; }
+      .line { stroke: #8adfff; stroke-width: 5; fill: none; marker-end: url(#arrow2); }
+    </style>
+  </defs>
+
+  <rect width="1600" height="520" rx="36" fill="url(#bg2)"/>
+  <text x="80" y="84" class="title">streaming lifecycle</text>
+  <text x="80" y="118" class="subtitle">Every tool call emits started, delta, and completed events without polling.</text>
+
+  <rect x="110" y="185" width="390" height="220" rx="28" class="card"/>
+  <circle cx="220" cy="295" r="62" class="ringA" filter="url(#glow2)"/>
+  <text x="220" y="287" text-anchor="middle" class="head">Started</text>
+  <text x="220" y="317" text-anchor="middle" class="body">ToolCallStartedEvent</text>
+  <text x="330" y="245" class="head" font-size="20">What happens</text>
+  <text x="330" y="281" class="body">- Tool is selected</text>
+  <text x="330" y="309" class="body">- Args are known</text>
+  <text x="330" y="337" class="body">- Approval may be requested</text>
+
+  <rect x="605" y="185" width="390" height="220" rx="28" class="card"/>
+  <circle cx="715" cy="295" r="62" class="ringB" filter="url(#glow2)"/>
+  <text x="715" y="287" text-anchor="middle" class="head">Delta</text>
+  <text x="715" y="317" text-anchor="middle" class="body">ToolCallDeltaEvent</text>
+  <text x="825" y="245" class="head" font-size="20">What happens</text>
+  <text x="825" y="281" class="body">- stdout streams live</text>
+  <text x="825" y="309" class="body">- stderr stays visible</text>
+  <text x="825" y="337" class="body">- progress stays incremental</text>
+
+  <rect x="1100" y="185" width="390" height="220" rx="28" class="card"/>
+  <circle cx="1210" cy="295" r="62" class="ringC" filter="url(#glow2)"/>
+  <text x="1210" y="287" text-anchor="middle" class="head">Completed</text>
+  <text x="1210" y="317" text-anchor="middle" class="body">ToolCallCompletedEvent</text>
+  <text x="1320" y="245" class="head" font-size="20">What happens</text>
+  <text x="1320" y="281" class="body">- Final result is returned</text>
+  <text x="1320" y="309" class="body">- LLM receives the full output</text>
+  <text x="1320" y="337" class="body">- Next turn can begin</text>
+
+  <path d="M500 295 L605 295" class="line"/>
+  <path d="M1000 295 L1100 295" class="line"/>
+</svg>

@@ -1,30 +1,18 @@
-"""Tool executor registry — exports all built-in tool executors."""
-from __future__ import annotations
-
-
+"""Tool executors — each wraps a specific capability (shell, read, edit, etc)."""
 from .base import ToolExecutor
-from .shell import ShellExecutor
-from .read import ReadExecutor
 from .edit import EditExecutor
+from .grep import GrepExecutor
+from .read import ReadExecutor
+from .shell import ShellExecutor
 from .web_fetch import WebFetchExecutor
+from .web_search import WebSearchExecutor
 
 __all__ = [
     "ToolExecutor",
-    "ShellExecutor",
-    "ReadExecutor",
     "EditExecutor",
+    "GrepExecutor",
+    "ReadExecutor",
+    "ShellExecutor",
     "WebFetchExecutor",
+    "WebSearchExecutor",
 ]
-
-# Registry: tool_name -> executor class
-BUILTIN_TOOLS: dict[str, type[ToolExecutor]] = {
-    "shell": ShellExecutor,
-    "read": ReadExecutor,
-    "edit": EditExecutor,
-    "web_fetch": WebFetchExecutor,
-}
-
-
-def get_executor(tool_name: str) -> type[ToolExecutor] | None:
-    """Look up a built-in tool executor by name."""
-    return BUILTIN_TOOLS.get(tool_name)
