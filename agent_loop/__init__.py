@@ -2,6 +2,15 @@
 
 from agent_loop.agent import Agent, ToolExecutor
 from agent_loop.dispatcher import ToolDispatcher
+from agent_loop.exceptions import (
+    AgentError,
+    ToolExecutionError,
+    ToolNotFoundError,
+    ApprovalRequiredError,
+    ApprovalRejectedError,
+    McpServerError,
+    SandboxError,
+)
 from agent_loop.models import (
     # Geometry
     Position,
@@ -52,6 +61,14 @@ __all__ = [
     "Agent",
     "ToolExecutor",
     "ToolDispatcher",
+    # Exceptions
+    "AgentError",
+    "ToolExecutionError",
+    "ToolNotFoundError",
+    "ApprovalRequiredError",
+    "ApprovalRejectedError",
+    "McpServerError",
+    "SandboxError",
     # Geometry
     "Position",
     "Range",

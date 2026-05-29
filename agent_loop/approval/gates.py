@@ -5,6 +5,8 @@ from __future__ import annotations
 import enum
 from typing import Any
 
+from agent_loop.exceptions import ApprovalRequiredError, ApprovalRejectedError
+
 # ---------------------------------------------------------------------------
 # Approval levels
 # ---------------------------------------------------------------------------
@@ -117,6 +119,12 @@ class ApprovalGates:
         ApprovalLevel
             - ``AUTO`` — proceed without approval.
             - ``PRE_CHECK`` — require human approval before running.
+
+        Raises
+        ------
+        ApprovalRequiredError
+            If the tool's configured level is ``PRE_CHECK`` and either
+            smart-mode is off or the executor marked it as high-risk.
         """
         level = self.get_level(tool_name)
 
@@ -125,6 +133,11 @@ class ApprovalGates:
             if executor is not None and hasattr(executor, "needs_approval"):
                 if not executor.needs_approval(args):
                     return ApprovalLevel.AUTO
+
+        if level == ApprovalLevel.PRE_CHECK:
+            raise ApprovalRequiredError(
+                f"Tool '{tool_name}' requires approval before execution"
+            )
 
         return level
 

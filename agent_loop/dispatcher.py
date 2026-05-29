@@ -1,4 +1,8 @@
-"""ToolDispatcher — maps tool names to executors and dispatches calls with error handling."""
+"""ToolDispatcher — maps tool names to executors and dispatches calls with error handling.
+
+Raises ``ToolNotFoundError`` for unknown tools and ``ToolExecutionError`` on
+execution failures (in addition to returning structured error dicts).
+"""
 
 from __future__ import annotations
 
@@ -8,6 +12,7 @@ import uuid
 from typing import Any, Callable, Dict, List, Optional, Union
 
 from agent_loop.agent import ToolExecutor
+from agent_loop.exceptions import ToolNotFoundError, ToolExecutionError
 
 
 def _generate_call_id() -> str:
@@ -85,15 +90,17 @@ class ToolDispatcher:
           - result (dict): the executor's output on success
           - error (str | None): error message on failure
           - duration_ms (float): wall-clock execution time in ms
+
+        Raises
+        ------
+        ToolNotFoundError
+            If *tool_name* is not registered.
+        ToolExecutionError
+            If the executor's ``execute()`` raises.
         """
         executor = self._executors.get(tool_name)
         if executor is None:
-            return {
-                "result": {},
-                "error": f"Unknown tool: '{tool_name}'",
-                "duration_ms": 0.0,
-            }
-
+            raise ToolNotFoundError(f"Unknown tool: '{tool_name}'")
         start = time.monotonic()
         try:
             raw = executor.execute(args)
@@ -104,6 +111,7 @@ class ToolDispatcher:
             return {"result": result, "error": None, "duration_ms": elapsed}
         except Exception as exc:
             elapsed = (time.monotonic() - start) * 1000
+            raise ToolExecutionError(str(exc)) from exc
             return {"result": {}, "error": str(exc), "duration_ms": elapsed}
 
     async def execute_async(
@@ -113,14 +121,18 @@ class ToolDispatcher:
         *,
         timeout: Optional[float] = None,
     ) -> Dict[str, Any]:
-        """Asynchronously dispatch a tool call with timeout support."""
+        """Asynchronously dispatch a tool call with timeout support.
+
+        Raises
+        ------
+        ToolNotFoundError
+            If *tool_name* is not registered.
+        ToolExecutionError
+            If the executor's ``execute()`` raises or times out.
+        """
         executor = self._executors.get(tool_name)
         if executor is None:
-            return {
-                "result": {},
-                "error": f"Unknown tool: '{tool_name}'",
-                "duration_ms": 0.0,
-            }
+            raise ToolNotFoundError(f"Unknown tool: '{tool_name}'")
 
         effective_timeout = timeout or self._default_timeout
         start = time.monotonic()
@@ -138,6 +150,8 @@ class ToolDispatcher:
 
         except asyncio.TimeoutError:
             elapsed = (time.monotonic() - start) * 1000
+            exc = ToolExecutionError(f"Tool '{tool_name}' timed out after {effective_timeout}s")
+            raise exc from None
             return {
                 "result": {},
                 "error": f"Tool '{tool_name}' timed out after {effective_timeout}s",
@@ -145,6 +159,7 @@ class ToolDispatcher:
             }
         except Exception as exc:
             elapsed = (time.monotonic() - start) * 1000
+            raise ToolExecutionError(str(exc)) from exc
             return {"result": {}, "error": str(exc), "duration_ms": elapsed}
 
     def execute_multi(
