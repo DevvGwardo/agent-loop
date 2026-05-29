@@ -20,19 +20,19 @@ class McpToolDefinition(BaseModel):
 class McpSnapshotCache:
     """In-memory cache of MCP tool definitions with generation tracking.
 
-    Each time ``sync()`` is called the generation counter is incremented
-    so consumers can detect when the tool set has changed.
-
     Usage::
 
         cache = McpSnapshotCache()
-        cache.register("my-server", McpToolDefinition(
+        cache.register(McpToolDefinition(
             server_name="my-server", tool_name="hello",
             description="Say hello", input_schema={"type": "object", "properties": {}},
         ))
         gen1 = cache.generation
-        cache.sync([])  # no changes → generation stays the same
-        cache.sync([McpToolDefinition(...)])  # new tool → generation bumps
+        cache.sync([])  # no changes -> generation stays the same
+        cache.sync([McpToolDefinition(...)])  # new tool -> generation bumps
+
+    Note: register() takes a single McpToolDefinition, NOT (server_name, tool).
+    The old register_server() and add_tool() methods do not exist.
     """
 
     def __init__(self) -> None:

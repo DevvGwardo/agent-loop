@@ -30,9 +30,11 @@ class GrepExecutor(ToolExecutor):
             "required": ["pattern"],
         }
 
-    async def execute(self, args: dict[str, Any] | None = None, context: dict | None = None) -> dict:
+    async def execute(self, args: dict | None = None, context: dict | None = None) -> dict:
         args = args or {}
         cmd = ["rg", "-n"]
+        if not args.get("pattern"):
+            return {"exit_code": 1, "stdout": "", "stderr": "No pattern provided", "count": 0, "success": False}
         if ctx := args.get("context"):
             cmd.extend(["-C", str(ctx)])
         if glob := args.get("file_glob"):

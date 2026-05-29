@@ -11,6 +11,7 @@ from agent_loop.mcp import McpSnapshotCache, McpToolDefinition
 from agent_loop.approval import ApprovalGates, ApprovalLevel
 from agent_loop.context import RequestContextBuilder
 
+
 results = []
 
 def bench(name, fn):

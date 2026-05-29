@@ -94,10 +94,9 @@ class ToolDispatcher:
                 "duration_ms": 0.0,
             }
 
-        call_id = _generate_call_id()
         start = time.monotonic()
         try:
-            raw = executor.execute(call_id, args)
+            raw = executor.execute(args)
             if asyncio.iscoroutine(raw):
                 raw = _resolve_async(raw)
             result = raw if isinstance(raw, dict) else {"output": raw}
@@ -124,11 +123,10 @@ class ToolDispatcher:
             }
 
         effective_timeout = timeout or self._default_timeout
-        call_id = _generate_call_id()
         start = time.monotonic()
 
         try:
-            raw = executor.execute(call_id, args)
+            raw = executor.execute(args)
             if asyncio.iscoroutine(raw):
                 result = await asyncio.wait_for(raw, timeout=effective_timeout)
             else:
@@ -200,7 +198,7 @@ class _FuncExecutor:
     def name(self) -> str:
         return self._name
 
-    def execute(self, call_id: str, args: Dict[str, Any]) -> Any:
+    def execute(self, args: Dict[str, Any]) -> Any:
         result = self._fn(**args)
         if asyncio.iscoroutine(result):
             return result
