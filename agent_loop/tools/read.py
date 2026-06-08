@@ -31,6 +31,17 @@ class ReadExecutor(ToolExecutor):
             "an optional error field."
         )
 
+    def args_schema(self) -> dict:
+        return {
+            "type": "object",
+            "properties": {
+                "path": {"type": "string", "description": "Path to the file to read"},
+                "offset": {"type": "integer", "description": "Byte offset to start reading from"},
+                "limit": {"type": "integer", "description": "Maximum number of bytes to read"},
+            },
+            "required": ["path"],
+        }
+
     # ------------------------------------------------------------------
     # Execute
     # ------------------------------------------------------------------

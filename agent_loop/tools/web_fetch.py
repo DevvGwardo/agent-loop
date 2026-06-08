@@ -40,6 +40,16 @@ class WebFetchExecutor(ToolExecutor):
             "Supports timeout (seconds) and size limits."
         )
 
+    def args_schema(self) -> dict:
+        return {
+            "type": "object",
+            "properties": {
+                "url": {"type": "string", "description": "URL to fetch"},
+                "timeout": {"type": "number", "description": "Request timeout in seconds"},
+            },
+            "required": ["url"],
+        }
+
     # ------------------------------------------------------------------
     # Execute
     # ------------------------------------------------------------------

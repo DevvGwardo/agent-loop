@@ -36,6 +36,23 @@ class EditExecutor(ToolExecutor):
             "Returns success: bool and optional error message."
         )
 
+    def args_schema(self) -> dict:
+        return {
+            "type": "object",
+            "properties": {
+                "path": {"type": "string", "description": "Path to the file to write or patch"},
+                "mode": {
+                    "type": "string",
+                    "enum": ["str_replace", "stream_content"],
+                    "description": "str_replace: replace a unique substring; stream_content: overwrite the whole file",
+                },
+                "old_string": {"type": "string", "description": "(str_replace) exact unique string to replace"},
+                "new_string": {"type": "string", "description": "(str_replace) replacement string"},
+                "content": {"type": "string", "description": "(stream_content) full new file content"},
+            },
+            "required": ["path", "mode"],
+        }
+
     # ------------------------------------------------------------------
     # Execute
     # ------------------------------------------------------------------

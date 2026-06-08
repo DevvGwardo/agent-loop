@@ -43,6 +43,18 @@ class ShellExecutor(ToolExecutor):
             "timeout (seconds), and environment variable overrides."
         )
 
+    def args_schema(self) -> dict:
+        return {
+            "type": "object",
+            "properties": {
+                "command": {"type": "string", "description": "Shell command to execute"},
+                "working_directory": {"type": "string", "description": "Directory to run the command in"},
+                "timeout": {"type": "integer", "description": "Timeout in seconds"},
+                "env": {"type": "object", "description": "Environment variable overrides"},
+            },
+            "required": ["command"],
+        }
+
     # ------------------------------------------------------------------
     # Approval heuristics
     # ------------------------------------------------------------------
