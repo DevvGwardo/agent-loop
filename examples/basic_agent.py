@@ -30,7 +30,7 @@ class SimpleShellExecutor:
     def name(self) -> str:
         return "shell"
 
-    async def execute(self, call_id: str, args: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute(self, args: Dict[str, Any], context: Dict[str, Any] | None = None) -> Dict[str, Any]:
         command: str = args.get("command", "")
         if not command:
             return {"success": False, "error": "No command provided"}
@@ -56,7 +56,7 @@ class SimpleReadExecutor:
     def name(self) -> str:
         return "read"
 
-    async def execute(self, call_id: str, args: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute(self, args: Dict[str, Any], context: Dict[str, Any] | None = None) -> Dict[str, Any]:
         path: str = args.get("path", "")
         try:
             with open(path, "r", encoding="utf-8") as f:
