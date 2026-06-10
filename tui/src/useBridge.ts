@@ -1,4 +1,7 @@
 import { spawn, ChildProcess } from "node:child_process";
+import { existsSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
 import { useEffect, useRef, useState, useCallback } from "react";
 import type {
   AgentEvent,
@@ -12,7 +15,21 @@ import type {
   ReplyEvent,
 } from "./types.js";
 
-const BRIDGE_SCRIPT = new URL("../../bridge.py", import.meta.url).pathname;
+// bridge.py lives at tui/bridge.py. The depth from this module differs between
+// the tsx dev build (tui/src/) and the compiled build (tui/dist/src/), so walk
+// up from here until we find it instead of hard-coding a relative depth.
+function resolveBridge(): string {
+  let dir = dirname(fileURLToPath(import.meta.url));
+  for (let i = 0; i < 6; i++) {
+    const candidate = join(dir, "bridge.py");
+    if (existsSync(candidate)) return candidate;
+    dir = dirname(dir);
+  }
+  // Fall back to the original relative guess.
+  return new URL("../../bridge.py", import.meta.url).pathname;
+}
+
+const BRIDGE_SCRIPT = resolveBridge();
 
 export function useBridge() {
   const [turns, setTurns] = useState<Turn[]>([]);

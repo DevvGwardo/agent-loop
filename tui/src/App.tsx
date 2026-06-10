@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, Text } from "ink";
 import { useBridge } from "./useBridge.js";
+import { Banner } from "./components/Banner.js";
 import { ChatLog } from "./components/ChatLog.js";
 import { InputBar } from "./components/InputBar.js";
 import { LoopDashboard } from "./components/LoopDashboard.js";
@@ -10,15 +11,12 @@ export function App() {
   const { turns, ready, tools, busy, loopSnapshot, sendPrompt, toggleExpand } =
     useBridge();
 
+  const missionName =
+    loopSnapshot?.root?.objective || loopSnapshot?.root?.name || null;
+
   return (
     <Box flexDirection="column" padding={1}>
-      {/* Header */}
-      <Box marginBottom={1}>
-        <Text bold color="cyan">
-          agent-loop
-        </Text>
-        <Text dimColor> — master loop harness</Text>
-      </Box>
+      <Banner project={missionName} />
 
       <LoopDashboard snapshot={loopSnapshot} busy={busy} />
 
