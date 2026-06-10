@@ -9,6 +9,7 @@ export interface ReadyEvent extends BridgeEvent {
   type: "ready";
   tools: string[];
   loop_snapshot?: LoopSnapshot;
+  model?: string;
 }
 
 export interface StartedEvent extends BridgeEvent {

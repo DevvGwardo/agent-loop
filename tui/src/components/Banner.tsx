@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Text } from "ink";
 import Gradient from "ink-gradient";
 import BigText from "ink-big-text";
+import { Spinner3D } from "./Spinner3D.js";
 
 // Animated gradient sweep, the same trick Claude Code / Gemini / Copilot CLIs
 // use: hold a fixed figlet wordmark and rotate the gradient stops each frame so
@@ -30,7 +31,19 @@ export function Banner({ project }: Props) {
 
   return (
     <Box flexDirection="column" marginBottom={1}>
-      <Box>
+      {/* 3D hero: a live, steerable ASCII torus */}
+      <Box justifyContent="center">
+        <Spinner3D />
+      </Box>
+      <Box justifyContent="center">
+        <Text dimColor>← → ↑ ↓ rotate</Text>
+        <Text dimColor>{"   ·   "}</Text>
+        <Text dimColor>space pause</Text>
+        <Text dimColor>{"   ·   "}</Text>
+        <Text dimColor>r reset</Text>
+      </Box>
+
+      <Box marginTop={1}>
         <Gradient colors={colors}>
           <BigText text="AGENT LOOP" font="block" space={false} />
         </Gradient>

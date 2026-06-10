@@ -8,7 +8,7 @@ import { LoopDashboard } from "./components/LoopDashboard.js";
 import { StatusBar } from "./components/StatusBar.js";
 
 export function App() {
-  const { turns, ready, tools, busy, loopSnapshot, sendPrompt, toggleExpand } =
+  const { turns, ready, tools, model, busy, loopSnapshot, sendPrompt, toggleExpand } =
     useBridge();
 
   const missionName =
@@ -38,6 +38,7 @@ export function App() {
         <StatusBar
           ready={ready}
           tools={tools}
+          model={model}
           turnCount={turns.length}
           busy={busy}
         />

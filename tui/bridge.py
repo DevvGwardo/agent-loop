@@ -66,16 +66,52 @@ def emit_stream_event(event: object, *, started_at: float) -> None:
         })
 
 
-def main() -> None:
+# Providers we can drive over the OpenAI-compatible wire: env key → config.
+# Ordered by priority when auto-detecting from the environment.
+_AUTO_PROVIDERS: list[tuple[str, str, str, str]] = [
+    # (api_key_env, base_url, default_model, label)
+    ("OPENAI_API_KEY", "https://api.openai.com/v1", "gpt-4o-mini", "openai"),
+    ("OPENROUTER_API_KEY", "https://openrouter.ai/api/v1", "anthropic/claude-3.5-sonnet", "openrouter"),
+    ("GROQ_API_KEY", "https://api.groq.com/openai/v1", "llama-3.3-70b-versatile", "groq"),
+    ("DEEPSEEK_API_KEY", "https://api.deepseek.com/v1", "deepseek-chat", "deepseek"),
+    ("XAI_API_KEY", "https://api.x.ai/v1", "grok-2-latest", "xai"),
+    ("TOGETHER_API_KEY", "https://api.together.xyz/v1", "meta-llama/Llama-3.3-70B-Instruct-Turbo", "together"),
+    ("FIREWORKS_API_KEY", "https://api.fireworks.ai/inference/v1", "accounts/fireworks/models/llama-v3p3-70b-instruct", "fireworks"),
+]
+
+
+def build_model_client() -> tuple["OpenAICompatibleChatClient | None", str]:
+    """Resolve a chat client from env. Returns (client, human-readable label)."""
     model_name = os.environ.get("AGENT_LOOP_MODEL")
-    model_client = (
-        OpenAICompatibleChatClient(
-            model=model_name,
-            base_url=os.environ.get("AGENT_LOOP_BASE_URL", "https://api.openai.com/v1"),
+    base_url = os.environ.get("AGENT_LOOP_BASE_URL")
+
+    # Explicit override wins.
+    if model_name:
+        return (
+            OpenAICompatibleChatClient(
+                model=model_name,
+                base_url=base_url or "https://api.openai.com/v1",
+            ),
+            f"{model_name}",
         )
-        if model_name
-        else None
-    )
+
+    # Otherwise pick the first provider whose API key is present.
+    for key_env, provider_url, default_model, label in _AUTO_PROVIDERS:
+        if os.environ.get(key_env):
+            return (
+                OpenAICompatibleChatClient(
+                    model=default_model,
+                    api_key=os.environ[key_env],
+                    base_url=base_url or provider_url,
+                ),
+                f"{label}:{default_model}",
+            )
+
+    return None, "none"
+
+
+def main() -> None:
+    model_client, model_label = build_model_client()
     mcp_cache, mcp_instructions, mcp_client = load_mcp_config()
     permission_mode = os.environ.get("AGENT_LOOP_PERMISSION_MODE", PermissionMode.WORKSPACE.value)
     harness = CodingAgentHarness(
@@ -89,7 +125,12 @@ def main() -> None:
     )
     master_loop = MasterLoopHarness(harness)
 
-    emit({"type": "ready", "tools": harness.tool_names, "loop_snapshot": master_loop.snapshot()})
+    emit({
+        "type": "ready",
+        "tools": harness.tool_names,
+        "loop_snapshot": master_loop.snapshot(),
+        "model": model_label,
+    })
 
     for line in sys.stdin:
         line = line.strip()
@@ -136,9 +177,18 @@ def main() -> None:
                     runner = harness.run(text)
                 else:
                     emit({
-                        "type": "error",
-                        "message": "Set AGENT_LOOP_MODEL for model-driven coding, or use /shell <command>.",
+                        "type": "reply",
+                        "text": (
+                            "No language model is configured yet, so I can't chat or write "
+                            "code on my own. You can still use me right now:\n"
+                            "  • /shell <command>  — run any shell command\n"
+                            "  • /mission <objective>  — drive the master loop\n\n"
+                            "To enable model-driven chat, set an API key (e.g. OPENAI_API_KEY, "
+                            "OPENROUTER_API_KEY, GROQ_API_KEY) or AGENT_LOOP_MODEL, then relaunch "
+                            "`loop`. A repo-root .env file is picked up automatically."
+                        ),
                     })
+                    emit({"type": "done"})
                     continue
 
                 while True:

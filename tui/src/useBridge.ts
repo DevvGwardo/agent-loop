@@ -35,6 +35,7 @@ export function useBridge() {
   const [turns, setTurns] = useState<Turn[]>([]);
   const [ready, setReady] = useState(false);
   const [tools, setTools] = useState<string[]>([]);
+  const [model, setModel] = useState<string>("none");
   const [busy, setBusy] = useState(false);
   const [loopSnapshot, setLoopSnapshot] = useState<LoopSnapshot | null>(null);
   const procRef = useRef<ChildProcess | null>(null);
@@ -98,6 +99,7 @@ export function useBridge() {
       case "ready": {
         setReady(true);
         setTools(event.tools);
+        setModel((event as { model?: string }).model ?? "none");
         setLoopSnapshot(event.loop_snapshot ?? null);
         break;
       }
@@ -255,6 +257,7 @@ export function useBridge() {
     turns,
     ready,
     tools,
+    model,
     busy,
     loopSnapshot,
     sendPrompt,
