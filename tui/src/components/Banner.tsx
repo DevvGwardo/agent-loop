@@ -45,7 +45,7 @@ export function Banner({ project }: Props) {
 
       <Box marginTop={1}>
         <Gradient colors={colors}>
-          <BigText text="AGENT LOOP" font="block" space={false} />
+          <BigText text="FINETUNER" font="block" space={false} />
         </Gradient>
         <Box flexDirection="column" justifyContent="flex-end" marginLeft={1}>
           <Text bold color="red">
@@ -60,7 +60,7 @@ export function Banner({ project }: Props) {
         <Text dimColor>mission loop</Text>
         <Text color="cyan"> › </Text>
         <Text dimColor>shipped change</Text>
-        <Text dimColor>{"   ·   master loop harness"}</Text>
+        <Text dimColor>{"   ·   finetuner master loop"}</Text>
       </Box>
 
       <Box>

@@ -12,7 +12,7 @@ export function ChatLog({ turns, onToggle }: Props) {
   if (turns.length === 0) {
     return (
       <Box flexDirection="column" paddingY={1}>
-        <Text dimColor>cheekagent ready. type a prompt.</Text>
+        <Text dimColor>finetuner ready. type a prompt.</Text>
       </Box>
     );
   }

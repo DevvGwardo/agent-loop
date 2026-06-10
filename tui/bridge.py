@@ -117,7 +117,7 @@ def main() -> None:
     harness = CodingAgentHarness(
         model_client=model_client,
         working_directory=os.environ.get("AGENT_LOOP_WORKDIR", os.getcwd()),
-        system_prompt="You are cheekagent, a helpful coding agent running inside a terminal TUI.",
+        system_prompt="You are finetuner, a helpful coding agent running inside a terminal TUI.",
         mcp_cache=mcp_cache if mcp_cache.tools else None,
         mcp_client=mcp_client,
         mcp_instructions=mcp_instructions,

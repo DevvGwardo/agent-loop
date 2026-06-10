@@ -17,7 +17,7 @@ export function StatusBar({ ready, tools, model, turnCount, busy }: Props) {
   return (
     <Box justifyContent="space-between">
       <Box>
-        <Text dimColor>agent-loop </Text>
+        <Text dimColor>finetuner </Text>
         <Text color={statusColor}>{statusText}</Text>
         <Text dimColor> · </Text>
         <Text color={hasModel ? "cyan" : "yellow"}>

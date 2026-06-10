@@ -1,8 +1,8 @@
 {
-  "name": "cheekagent-tui",
+  "name": "finetuner-tui",
   "version": "0.1.0",
   "private": true,
-  "description": "Ink (React) TUI for agent-loop",
+  "description": "Ink (React) TUI for finetuner (agent-loop)",
   "type": "module",
   "scripts": {
     "dev": "tsx bin/tui.ts",
