@@ -27,3 +27,6 @@ dev = [
 
 [tool.hatch.build.targets.wheel]
 packages = ["agent_loop"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

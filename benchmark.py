@@ -83,15 +83,20 @@ mcp_r = bench("mcp_cache", mcp_test)
 
 # 9. Approval gates
 async def gate_test():
+    from agent_loop.exceptions import ApprovalRequiredError
     gates = ApprovalGates(smart_mode=True)
     gates.update_policy({"shell": ApprovalLevel.PRE_CHECK})
     gates.update_policy({"read": ApprovalLevel.AUTO})
     se = agent.get_executor("shell")
     re = agent.get_executor("read")
-    r1 = await gates.should_auto_approve("shell", {"command": "rm -rf /"}, se)
+    try:
+        r1 = await gates.should_auto_approve("shell", {"command": "rm -rf /"}, se)
+        r1_result = "ALLOWED"
+    except ApprovalRequiredError:
+        r1_result = "BLOCKED"
     r2 = await gates.should_auto_approve("read", {"path": "test.txt"}, re)
     r3 = await gates.should_auto_approve("shell", {"command": "echo hi"}, se)
-    return (r1, r2, r3)
+    return (r1_result, r2, r3)
 r9 = bench("approval", lambda: __import__('asyncio').run(gate_test()))
 
 # 10. Context builder

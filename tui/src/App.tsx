@@ -3,10 +3,11 @@ import { Box, Text } from "ink";
 import { useBridge } from "./useBridge.js";
 import { ChatLog } from "./components/ChatLog.js";
 import { InputBar } from "./components/InputBar.js";
+import { LoopDashboard } from "./components/LoopDashboard.js";
 import { StatusBar } from "./components/StatusBar.js";
 
 export function App() {
-  const { turns, ready, tools, busy, sendPrompt, toggleExpand, clearTurns } =
+  const { turns, ready, tools, busy, loopSnapshot, sendPrompt, toggleExpand } =
     useBridge();
 
   return (
@@ -14,10 +15,12 @@ export function App() {
       {/* Header */}
       <Box marginBottom={1}>
         <Text bold color="cyan">
-          cheekagent
+          agent-loop
         </Text>
-        <Text dimColor> — ink tui</Text>
+        <Text dimColor> — master loop harness</Text>
       </Box>
+
+      <LoopDashboard snapshot={loopSnapshot} busy={busy} />
 
       {/* Chat log (scrollable area) */}
       <Box flexDirection="column" flexGrow={1} minHeight={10}>

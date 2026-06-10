@@ -7,6 +7,9 @@ import type {
   StartedEvent,
   DeltaEvent,
   CompletedEvent,
+  LoopEvent,
+  LoopSnapshot,
+  ReplyEvent,
 } from "./types.js";
 
 const BRIDGE_SCRIPT = new URL("../../bridge.py", import.meta.url).pathname;
@@ -16,6 +19,7 @@ export function useBridge() {
   const [ready, setReady] = useState(false);
   const [tools, setTools] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
+  const [loopSnapshot, setLoopSnapshot] = useState<LoopSnapshot | null>(null);
   const procRef = useRef<ChildProcess | null>(null);
   const bufferRef = useRef("");
   const currentTurnRef = useRef<Turn | null>(null);
@@ -77,6 +81,24 @@ export function useBridge() {
       case "ready": {
         setReady(true);
         setTools(event.tools);
+        setLoopSnapshot(event.loop_snapshot ?? null);
+        break;
+      }
+      case "loop": {
+        const le = event as LoopEvent;
+        setLoopSnapshot(le.snapshot);
+        break;
+      }
+      case "reply": {
+        const re = event as ReplyEvent;
+        if (currentTurnRef.current) {
+          currentTurnRef.current.reply = re.text;
+          setTurns((prev) => {
+            const updated = [...prev];
+            updated[updated.length - 1] = { ...currentTurnRef.current! };
+            return updated;
+          });
+        }
         break;
       }
       case "started": {
@@ -186,7 +208,12 @@ export function useBridge() {
       setTurns((prev) => [...prev, turn]);
       setBusy(true);
 
-      procRef.current.stdin?.write(JSON.stringify({ type: "prompt", text }) + "\n");
+      const missionPrefix = /^\/mission\s+/;
+      const messageType = missionPrefix.test(text) ? "mission" : "prompt";
+      const payloadText = text.replace(missionPrefix, "").trim();
+      procRef.current.stdin?.write(
+        JSON.stringify({ type: messageType, text: payloadText }) + "\n",
+      );
     },
     [ready],
   );
@@ -207,5 +234,14 @@ export function useBridge() {
     setTurns([]);
   }, []);
 
-  return { turns, ready, tools, busy, sendPrompt, toggleExpand, clearTurns };
+  return {
+    turns,
+    ready,
+    tools,
+    busy,
+    loopSnapshot,
+    sendPrompt,
+    toggleExpand,
+    clearTurns,
+  };
 }

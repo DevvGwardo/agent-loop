@@ -103,12 +103,14 @@ class Agent:
         prompt: str,
         *,
         tool_sequence: Optional[List[Dict[str, Any]]] = None,
+        context: Optional[Dict[str, Any]] = None,
     ) -> Generator[Union[ToolCallStartedEvent, ToolCallDeltaEvent, ToolCallCompletedEvent], None, str]:
         """Accept a prompt and yield streaming tool events.
 
         The *tool_sequence* is a list of dicts with keys:
             - tool (str): name of the registered executor
             - args (dict): arguments to pass
+        The optional *context* dict is forwarded to every executor.
 
         By default a simple sequence is auto-generated.  Subclasses
         should override this method to implement LLM call-and-response
@@ -124,7 +126,7 @@ class Agent:
         for call_spec in tool_sequence:
             tool_name = call_spec["tool"]
             args = call_spec.get("args", {})
-            call_id = call_spec.get("call_id", uuid.uuid4().hex[:12])
+            call_id = call_spec.get("call_id") or uuid.uuid4().hex[:12]
 
             executor = self._executors.get(tool_name)
             if executor is None:
@@ -143,7 +145,7 @@ class Agent:
             yield ToolCallDeltaEvent(call_id=call_id, delta=f"Executing {tool_name}...")
 
             try:
-                result = _resolve(executor.execute(args))
+                result = _resolve(executor.execute(args, context))
             except Exception as exc:
                 result = {}
                 error = str(exc)

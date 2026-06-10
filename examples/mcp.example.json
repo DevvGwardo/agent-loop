@@ -1,0 +1,20 @@
+{
+  "instructions": "Use the demo server for echo checks during development.",
+  "tools": [
+    {
+      "server_name": "demo",
+      "tool_name": "echo",
+      "description": "Echo a message back for smoke tests.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Text to echo"
+          }
+        },
+        "required": ["message"]
+      }
+    }
+  ]
+}

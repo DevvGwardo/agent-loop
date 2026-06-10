@@ -158,6 +158,182 @@ registry.load_skill("deploy", "Run `npm run build && npm run deploy`")
 active = registry.for_tool("shell")
 ```
 
+## Coding Agent Harness
+
+`CodingAgentHarness` is the integration layer for building your own agent
+surface. It exposes the local coding tools to an OpenAI-compatible tool-calling
+model, keeps conversation/tool history, and yields the same streaming tool
+events as `Agent.run()`.
+
+```python
+from agent_loop import CodingAgentHarness, OpenAICompatibleChatClient
+
+model = OpenAICompatibleChatClient(model="your-tool-calling-model")
+harness = CodingAgentHarness(
+    model_client=model,
+    working_directory="/path/to/repo",
+)
+
+runner = harness.run("inspect the repo and run the tests")
+while True:
+    try:
+        event = next(runner)
+        print(event)
+    except StopIteration as done:
+        print("reply:", done.value)
+        break
+```
+
+For controller processes, `scripts/run-as-child.py` accepts JSON on stdin and
+streams NDJSON on stdout:
+
+```bash
+echo '{
+  "task": "read README.md and summarize it",
+  "model": "your-tool-calling-model",
+  "working_directory": "'$PWD'"
+}' | python3 scripts/run-as-child.py
+```
+
+Without a model, the same bridge can run deterministic tool sequences:
+
+```bash
+echo '{
+  "task": "check current directory",
+  "working_directory": "'$PWD'",
+  "tool_sequence": [
+    {"tool": "shell", "args": {"command": "pwd"}}
+  ]
+}' | python3 scripts/run-as-child.py
+```
+
+## Master Loop Harness
+
+`MasterLoopHarness` adds the long-running orchestration layer:
+
+```text
+master loop
+  mission loop
+    goal loop
+      agent loop
+        workflow loop
+          tool loop
+```
+
+This is useful when a single prompt is too small for the job. A mission can run
+for one cycle, several cycles, or perpetually with a `should_continue`
+callback. Every layer emits `LoopLifecycleEvent` snapshots, and tool calls still
+stream through the existing `ToolCallStartedEvent` / `ToolCallDeltaEvent` /
+`ToolCallCompletedEvent` protocol.
+
+```python
+from agent_loop import (
+    AgentLoopSpec,
+    CodingAgentHarness,
+    GoalLoopSpec,
+    MasterLoopHarness,
+    MissionLoopSpec,
+    WorkflowLoopSpec,
+)
+from agent_loop.tools import ShellExecutor
+
+coding = CodingAgentHarness(executors=[ShellExecutor()])
+master = MasterLoopHarness(coding)
+
+mission = MissionLoopSpec(
+    objective="Keep the repo healthy",
+    max_cycles=2,
+    goals=[
+        GoalLoopSpec(
+            name="verify",
+            objective="Run a lightweight health check",
+            agents=[
+                AgentLoopSpec(
+                    name="maintainer",
+                    workflows=[
+                        WorkflowLoopSpec(
+                            name="tests",
+                            tool_sequence=[
+                                {"tool": "shell", "args": {"command": "pytest -q"}}
+                            ],
+                        )
+                    ],
+                )
+            ],
+        )
+    ],
+)
+
+for event in master.run(mission):
+    print(event)
+```
+
+Headless controllers can run the same hierarchy by passing `mode: "mission"` to
+the child bridge:
+
+```bash
+echo '{
+  "mode": "mission",
+  "task": "check current directory",
+  "tool_sequence": [
+    {"tool": "shell", "args": {"command": "pwd"}}
+  ]
+}' | python3 scripts/run-as-child.py
+```
+
+The Ink TUI exposes the hierarchy as a mission-control panel. Prefix a prompt
+with `/mission` to route it through the master loop. Set
+`AGENT_LOOP_MISSION_CYCLES` for finite repeated missions, or
+`AGENT_LOOP_PERPETUAL=1` for a perpetual local loop.
+
+The Telegram adapter in `examples/telegram_agent.py` exposes a Codex-style
+controller around the same harness. It persists sessions, supports slash
+commands, and keeps explicit user shell commands separate from model-driven
+tool calls.
+
+```bash
+export TELEGRAM_BOT_TOKEN=...
+export OPENAI_API_KEY=...
+export AGENT_LOOP_MODEL=your-tool-calling-model
+export AGENT_LOOP_WORKDIR=/path/to/repo
+python3 examples/telegram_agent.py
+```
+
+Useful Telegram commands:
+
+| Command | Purpose |
+| --- | --- |
+| `/status` | Show thread id, model, cwd, permission mode, tools, and plan |
+| `/permissions read-only\|workspace\|full-access` | Switch Codex-style permission mode |
+| `/model <name>` | Switch the active tool-calling model |
+| `/cd <path>` | Change the active workspace |
+| `/shell <command>` | Run an explicit user shell command |
+| `/diff` / `/gitstatus` | Inspect local git changes |
+| `/review [focus]` | Ask the agent to review local changes without editing |
+| `/plan [prompt]` | Ask the agent to plan before implementation |
+| `/sessions`, `/resume <thread-id\|last>`, `/new`, `/clear` | Manage persistent conversations |
+| `/init` | Create a starter `AGENTS.md` |
+| `/tools`, `/mcp`, `/help` | Inspect available capabilities |
+| `/confirm <code>` | Pair this Telegram chat (printed on bot startup) |
+
+The controller code lives in `agent_loop.telegram.TelegramCodexAgent`, so tests
+and other chat surfaces can reuse the command router without calling Telegram.
+
+On first run the bot prints a pairing code. Only the paired chat (or
+`AGENT_LOOP_TELEGRAM_CHAT_ID`) can drive the agent.
+
+### MCP tools
+
+Copy `examples/mcp.example.json` to `~/.agent-loop/mcp.json` and register
+handlers with `CallableMcpClient`, or point `AGENT_LOOP_MCP_URL` at an HTTP
+bridge that accepts `POST /call` with `{server, tool, arguments}`.
+
+MCP tools are exposed to the model as `mcp__<server>__<tool>` executors and
+show up in `/mcp`.
+
+The harness also injects `AGENTS.md` and a short git status into the system
+prompt automatically when present in the workspace.
+
 ## License
 
 MIT — use freely, build on it, ship it.

@@ -15,7 +15,7 @@ export function StatusBar({ ready, tools, turnCount, busy }: Props) {
   return (
     <Box justifyContent="space-between">
       <Box>
-        <Text dimColor>cheekagent </Text>
+        <Text dimColor>agent-loop </Text>
         <Text color={statusColor}>{statusText}</Text>
         <Text dimColor> · {tools.length} tools</Text>
         {turnCount > 0 && (

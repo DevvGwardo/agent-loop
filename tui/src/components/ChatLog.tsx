@@ -52,6 +52,14 @@ export function ChatLog({ turns, onToggle }: Props) {
               <Text color="red">✗ {turn.error}</Text>
             </Box>
           )}
+
+          {/* Final reply */}
+          {turn.reply && (
+            <Box marginLeft={2}>
+              <Text color="green">= </Text>
+              <Text>{turn.reply}</Text>
+            </Box>
+          )}
         </Box>
       ))}
     </Box>

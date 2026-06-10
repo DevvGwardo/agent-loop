@@ -8,6 +8,7 @@ export interface BridgeEvent {
 export interface ReadyEvent extends BridgeEvent {
   type: "ready";
   tools: string[];
+  loop_snapshot?: LoopSnapshot;
 }
 
 export interface StartedEvent extends BridgeEvent {
@@ -37,6 +38,38 @@ export interface ReplyEvent extends BridgeEvent {
   text: string;
 }
 
+export interface LoopNodeState {
+  id: string;
+  kind: "master" | "mission" | "goal" | "agent" | "workflow" | "tool";
+  name: string;
+  objective: string;
+  parent_id: string | null;
+  status: "pending" | "running" | "completed" | "failed" | "stopped";
+  cycle: number;
+  iteration: number;
+  metrics: Record<string, unknown>;
+  children: LoopNodeState[];
+  created_at: string;
+  updated_at: string;
+  started_at: string | null;
+  completed_at: string | null;
+  error: string | null;
+}
+
+export interface LoopSnapshot {
+  root: LoopNodeState | null;
+  active_path: string[];
+  stats: Record<string, number>;
+}
+
+export interface LoopEvent extends BridgeEvent {
+  type: "loop";
+  event: string;
+  node: LoopNodeState;
+  snapshot: LoopSnapshot;
+  message: string;
+}
+
 export interface DoneEvent extends BridgeEvent {
   type: "done";
 }
@@ -55,6 +88,8 @@ export type AgentEvent =
   | StartedEvent
   | DeltaEvent
   | CompletedEvent
+  | ReplyEvent
+  | LoopEvent
   | DoneEvent
   | ErrorEvent
   | ByeEvent;
@@ -76,6 +111,7 @@ export interface ToolCallState {
 export interface Turn {
   id: string;
   prompt: string;
+  reply?: string;
   toolCalls: ToolCallState[];
   done: boolean;
   error: string | null;

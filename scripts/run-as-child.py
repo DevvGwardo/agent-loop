@@ -32,13 +32,20 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
 
-from agent_loop import Agent
+from agent_loop.harness import CodingAgentHarness
+from agent_loop.llm import OpenAICompatibleChatClient
+from agent_loop.master_loop import LoopLifecycleEvent, MasterLoopHarness, MissionLoopSpec
+from agent_loop.mcp import load_mcp_config
+from agent_loop.models import ToolCallCompletedEvent, ToolCallDeltaEvent, ToolCallStartedEvent
 from agent_loop.tools import (
-    ReadExecutor,
     EditExecutor,
     GrepExecutor,
-    WebFetchExecutor,
+    GlobExecutor,
+    PlanExecutor,
+    ReadExecutor,
     ShellExecutor,
+    WebFetchExecutor,
+    WebSearchExecutor,
 )
 
 
@@ -61,21 +68,23 @@ def main() -> None:
         emit({"type": "error", "message": f"Invalid JSON: {e}"})
         sys.exit(1)
 
-    task = payload.get("task", "")
+    task = payload.get("task") or payload.get("objective") or payload.get("text") or ""
     if not task:
         emit({"type": "error", "message": "Missing 'task' field"})
         sys.exit(1)
 
-    tool_names = payload.get("tools", ["shell", "read", "edit", "grep"])
+    tool_names = payload.get("tools", ["shell", "read", "edit", "grep", "glob", "update_plan"])
     working_dir = payload.get("working_directory")
 
-    # Map tool names to executors
     executor_map = {
         "shell": ShellExecutor,
         "read": ReadExecutor,
         "edit": EditExecutor,
         "grep": GrepExecutor,
+        "glob": GlobExecutor,
         "web_fetch": WebFetchExecutor,
+        "web_search": WebSearchExecutor,
+        "update_plan": PlanExecutor,
     }
 
     executors = []
@@ -90,65 +99,125 @@ def main() -> None:
         emit({"type": "error", "message": "No valid tools configured"})
         sys.exit(1)
 
-    # Build the agent
-    agent = Agent(executors=executors)
+    model_client = None
+    model = payload.get("model") or None
+    if model:
+        model_client = OpenAICompatibleChatClient(
+            model=model,
+            api_key=payload.get("api_key"),
+            base_url=payload.get("base_url", "https://api.openai.com/v1"),
+            timeout=float(payload.get("model_timeout", 120)),
+        )
+
+    mcp_cache, mcp_instructions, mcp_client = load_mcp_config()
+    harness = CodingAgentHarness(
+        model_client=model_client,
+        executors=executors,
+        working_directory=working_dir,
+        max_iterations=int(payload.get("max_iterations", 8)),
+        mcp_cache=mcp_cache if mcp_cache.tools else None,
+        mcp_client=mcp_client,
+        mcp_instructions=mcp_instructions,
+        permission_mode=payload.get("permission_mode", "workspace"),
+    )
+    master_loop = MasterLoopHarness(harness)
+
+    def emit_stream_event(event: object) -> None:
+        if isinstance(event, LoopLifecycleEvent):
+            emit({
+                "type": "loop_event",
+                "event": event.event_type,
+                "node": event.node,
+                "snapshot": event.snapshot,
+                "message": event.message,
+            })
+        elif isinstance(event, ToolCallStartedEvent):
+            emit({
+                "type": "tool_started",
+                "tool": event.tool_name,
+                "id": event.call_id,
+                "args": event.args,
+            })
+        elif isinstance(event, ToolCallDeltaEvent):
+            emit({
+                "type": "tool_delta",
+                "id": event.call_id,
+                "data": event.delta,
+            })
+        elif isinstance(event, ToolCallCompletedEvent):
+            emit({
+                "type": "tool_completed",
+                "tool": event.tool_name,
+                "id": event.call_id,
+                "result": event.result,
+                "error": event.error,
+            })
 
     # Run the task and stream events
-    import asyncio
+    def run_task():
+        tool_sequence = payload.get("tool_sequence")
+        mission_mode = (
+            payload.get("mode") == "mission"
+            or payload.get("mission") is True
+            or "goals" in payload
+        )
 
-    async def run_task():
-        context = {}
-        if working_dir:
-            context["working_directory"] = working_dir
+        if mission_mode:
+            mission_payload = dict(payload)
+            mission_payload.setdefault("objective", task)
+            if tool_sequence is not None and not mission_payload.get("goals"):
+                mission_payload["goals"] = [
+                    {
+                        "name": "primary-goal",
+                        "objective": task,
+                        "agents": [
+                            {
+                                "name": "primary-agent",
+                                "workflows": [
+                                    {
+                                        "name": "execute",
+                                        "tool_sequence": tool_sequence,
+                                    }
+                                ],
+                            }
+                        ],
+                    }
+                ]
+            runner = master_loop.run(MissionLoopSpec.from_json(mission_payload))
+        elif tool_sequence is None and model_client is None:
+            if "shell" not in harness.tool_names:
+                emit({
+                    "type": "error",
+                    "message": "No model configured and shell fallback is unavailable",
+                })
+                return
+            tool_sequence = [{"tool": "shell", "args": {"command": task}, "call_id": "call_1"}]
+            runner = harness.run_tool_sequence(task, tool_sequence)
+        else:
+            runner = (
+                harness.run_tool_sequence(task, tool_sequence)
+                if tool_sequence is not None
+                else harness.run(task)
+            )
 
-        # We don't have an LLM — we just execute the tool calls directly.
-        # The agent-loop Agent.run() expects an LLM response with tool_calls.
-        # Instead, we use a simplified direct-execution approach:
-        # Parse the task, determine which tool to call, execute it.
-        
-        # For now: run shell as the primary tool with the task as a command.
-        # This is a simplified bridge — extend for LLM-based agent execution.
-        
-        shell = agent.get_executor("shell")
-        if shell and task:
-            emit({"type": "tool_started", "tool": "shell", "id": "call_1"})
-            
-            args = {"command": task}
-            if working_dir:
-                args["working_directory"] = working_dir
-            
+        summary = ""
+        while True:
             try:
-                result = await shell.execute(args, context)
-                exit_code = result.get("exit_code", -1)
-                stdout = result.get("stdout", "")
-                stderr = result.get("stderr", "")
-                
-                emit({"type": "tool_delta", "tool": "shell", "id": "call_1", "data": stdout})
-                if stderr:
-                    emit({"type": "tool_delta", "tool": "shell", "id": "call_1", "data": stderr})
-                
-                emit({
-                    "type": "tool_completed",
-                    "tool": "shell",
-                    "id": "call_1",
-                    "result": result,
-                })
-            except Exception as e:
-                emit({
-                    "type": "tool_completed",
-                    "tool": "shell",
-                    "id": "call_1",
-                    "result": {
-                        "exit_code": -1,
-                        "stdout": "",
-                        "stderr": str(e),
-                        "success": False,
-                    },
-                })
+                event = next(runner)
+            except StopIteration as done:
+                summary = done.value or ""
+                break
 
-        emit({"type": "done", "summary": f"Task completed: {task}", "history": []})
+            emit_stream_event(event)
 
-    asyncio.run(run_task())
+        emit({
+            "type": "done",
+            "summary": summary or f"Task completed: {task}",
+            "history": harness.messages,
+            "loop_snapshot": master_loop.snapshot(),
+        })
+
+    run_task()
 
 
 if __name__ == "__main__":
