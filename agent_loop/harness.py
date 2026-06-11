@@ -231,6 +231,21 @@ class CodingAgentHarness:
     def messages(self) -> list[dict[str, Any]]:
         return list(self._messages)
 
+    def set_messages(self, messages: list[dict[str, Any]]) -> None:
+        """Replace the transcript, always preserving the system message."""
+        system = self._messages[0] if self._messages else None
+        if messages and messages[0].get("role") == MessageRole.system.value:
+            self._messages = list(messages)
+        elif system is not None:
+            self._messages = [system, *messages]
+        else:
+            self._messages = list(messages)
+
+    def clear_transcript(self) -> None:
+        """Drop conversation history, keeping only the system message."""
+        self.agent.clear_history()
+        self._messages = self._messages[:1]
+
     @property
     def plan(self) -> list[PlanStep]:
         for name in self.agent.tool_names:

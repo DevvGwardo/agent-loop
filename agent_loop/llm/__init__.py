@@ -11,6 +11,7 @@ Pick a provider by name and a model id, then run::
         print(event)
 """
 from .agent import Approver, LLMAgent
+from .autodetect import AUTO_PROVIDERS, detect_chat_client
 from .chat import (
     ChatModelClient,
     ChatModelResponse,
@@ -43,4 +44,6 @@ __all__ = [
     "ChatModelResponse",
     "OpenAICompatibleChatClient",
     "ToolCallRequest",
+    "AUTO_PROVIDERS",
+    "detect_chat_client",
 ]

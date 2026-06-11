@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
-# loop — launch the agent-loop TUI from anywhere.
+# loop — launch finetuner from anywhere.
 #
-# Usage:  loop
+# Usage:
+#   loop              open the TUI (default)
+#   loop telegram     run the Telegram bot (foreground)
+#   loop tg           alias for `loop telegram`
 #
 # The agent operates on the directory you invoke `loop` from (AGENT_LOOP_WORKDIR).
-# Model credentials are read from the environment, or from an optional .env at
-# the repo root (e.g. AGENT_LOOP_MODEL=gpt-4o, OPENAI_API_KEY=...).
+# Model + bot credentials are read from the environment, or from an optional .env
+# at the repo root (AGENT_LOOP_MODEL / OPENAI_API_KEY / TELEGRAM_BOT_TOKEN / ...).
 set -euo pipefail
 
 # Resolve the repo root from this script's real location (follows symlinks).
@@ -21,7 +24,7 @@ ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 # The directory the user launched from is the agent's workspace.
 export AGENT_LOOP_WORKDIR="${AGENT_LOOP_WORKDIR:-$PWD}"
 
-# Optional project-level config (model + API keys).
+# Optional project-level config (model + API keys + bot token).
 if [ -f "$ROOT/.env" ]; then
   set -a
   # shellcheck disable=SC1091
@@ -29,12 +32,23 @@ if [ -f "$ROOT/.env" ]; then
   set +a
 fi
 
-cd "$ROOT/tui"
-
-# First run: install JS deps.
-if [ ! -d node_modules/ink ]; then
-  echo "loop: installing TUI dependencies (first run)…" >&2
-  npm install --legacy-peer-deps >/dev/null 2>&1
-fi
-
-exec npm run --silent dev
+cmd="${1:-tui}"
+case "$cmd" in
+  telegram | tg | bot)
+    cd "$ROOT"
+    exec python3 -m agent_loop.telegram_bot
+    ;;
+  tui | "")
+    cd "$ROOT/tui"
+    # First run: install JS deps.
+    if [ ! -d node_modules/ink ]; then
+      echo "loop: installing TUI dependencies (first run)…" >&2
+      npm install --legacy-peer-deps >/dev/null 2>&1
+    fi
+    exec npm run --silent dev
+    ;;
+  *)
+    echo "loop: unknown command '$cmd' (use: loop | loop telegram)" >&2
+    exit 1
+    ;;
+esac

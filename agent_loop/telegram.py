@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import os
 import subprocess
+from collections.abc import Generator
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 from agent_loop.harness import CodingAgentHarness
-from agent_loop.llm import OpenAICompatibleChatClient
+from agent_loop.llm import OpenAICompatibleChatClient, detect_chat_client
+from agent_loop.master_loop import LoopLifecycleEvent, MasterLoopHarness, MissionLoopSpec
 from agent_loop.mcp import format_mcp_status, load_mcp_config
 from agent_loop.mcp.client import McpClient
 from agent_loop.mcp.cache import McpSnapshotCache
@@ -18,6 +20,9 @@ from agent_loop.session import AgentSessionState, PermissionMode, SessionStore
 
 
 HELP_TEXT = """Commands:
+/mission <objective> - run the autonomous master loop on an objective
+/auto <objective> - run a perpetual mission until you /stop it
+/stop - stop the current mission
 /status - show model, thread, cwd, permissions, and tools
 /permissions [read-only|workspace|full-access] - view or change permissions
 /model [name] - view or change model
@@ -39,10 +44,12 @@ HELP_TEXT = """Commands:
 
 @dataclass
 class TelegramAgentConfig:
-    model: str
-    working_directory: str
+    model: str = ""
+    working_directory: str = ""
     base_url: str = "https://api.openai.com/v1"
     max_iterations: int = 8
+    permission_mode: str = PermissionMode.FULL_ACCESS.value
+    mission_cycles: int = 1
     mcp_cache: McpSnapshotCache | None = None
     mcp_client: McpClient | None = None
     mcp_instructions: str = ""
@@ -58,13 +65,21 @@ class TelegramCodexAgent:
         config: TelegramAgentConfig | None = None,
     ) -> None:
         self.store = store or SessionStore()
+        # Resolve a model client up front so the bot starts with zero config.
+        client, model_label = detect_chat_client()
+        self.model_client = client
+        self.model_label = model_label
         if config is None:
             mcp_cache, mcp_instructions, mcp_client = load_mcp_config()
             config = TelegramAgentConfig(
-                model=os.environ["AGENT_LOOP_MODEL"],
+                model=model_label if model_label != "none" else "",
                 working_directory=os.environ.get("AGENT_LOOP_WORKDIR", os.getcwd()),
                 base_url=os.environ.get("AGENT_LOOP_BASE_URL", "https://api.openai.com/v1"),
                 max_iterations=int(os.environ.get("AGENT_LOOP_MAX_ITERATIONS", "8")),
+                permission_mode=os.environ.get(
+                    "AGENT_LOOP_PERMISSION_MODE", PermissionMode.FULL_ACCESS.value
+                ),
+                mission_cycles=int(os.environ.get("AGENT_LOOP_MISSION_CYCLES", "1")),
                 mcp_cache=mcp_cache if mcp_cache.tools else None,
                 mcp_client=mcp_client,
                 mcp_instructions=mcp_instructions,
@@ -72,17 +87,48 @@ class TelegramCodexAgent:
         self.config = config
         self._harnesses: dict[str, CodingAgentHarness] = {}
         self._active_threads: dict[str, str] = {}
+        self._missions: dict[str, MasterLoopHarness] = {}
+        self._stop_flags: dict[str, bool] = {}
 
     def handle_text(self, chat_id: int | str, text: str) -> str:
+        """Blocking convenience wrapper: collect the full stream into one string."""
+        return "\n".join(chunk for chunk in self.stream(chat_id, text) if chunk).strip()
+
+    def stream(self, chat_id: int | str, text: str) -> Generator[str, None, None]:
+        """Yield progress chunks as the agent works, for live Telegram updates."""
         text = text.strip()
         if not text:
-            return ""
+            return
+        cid = str(chat_id)
+
         if text.startswith("/"):
-            return self._handle_command(str(chat_id), text)
-        harness = self._harness_for_chat(str(chat_id))
-        output = self._run_prompt(harness, text)
-        self._persist(str(chat_id), harness)
-        return output
+            name, _, raw_args = text.partition(" ")
+            command = name.removeprefix("/").lower()
+            args = raw_args.strip()
+            if command in {"mission", "auto"}:
+                yield from self._stream_mission(cid, args, perpetual=command == "auto")
+                return
+            if command == "stop":
+                yield self._stop(cid)
+                return
+            # All other commands are quick and return a single string.
+            yield self._handle_command(cid, text)
+            return
+
+        harness = self._harness_for_chat(cid)
+        if self.model_client is None:
+            yield self._no_model_hint()
+            return
+        yield from self._stream_prompt(harness, text)
+        self._persist(cid, harness)
+
+    @staticmethod
+    def _no_model_hint() -> str:
+        return (
+            "No language model is configured. Set an API key (OPENAI_API_KEY, "
+            "OPENROUTER_API_KEY, GROQ_API_KEY, …) or AGENT_LOOP_MODEL and restart "
+            "the bot. You can still use /shell, /diff, and /gitstatus."
+        )
 
     def _harness_for_chat(self, chat_id: str) -> CodingAgentHarness:
         state = None
@@ -95,6 +141,7 @@ class TelegramCodexAgent:
                 chat_id=chat_id,
                 model=self.config.model,
                 working_directory=self.config.working_directory,
+                permission_mode=self.config.permission_mode,
             )
             self.store.upsert(state)
         self._active_threads[chat_id] = state.thread_id
@@ -103,16 +150,19 @@ class TelegramCodexAgent:
     def _harness_from_state(self, state: AgentSessionState) -> CodingAgentHarness:
         if state.thread_id in self._harnesses:
             return self._harnesses[state.thread_id]
-        client = OpenAICompatibleChatClient(
-            model=state.model or self.config.model,
-            base_url=self.config.base_url,
-        )
+        # Prefer a session-pinned model; otherwise use the auto-detected client.
+        if state.model and state.model != self.model_label and state.model != "none":
+            client: Any = OpenAICompatibleChatClient(
+                model=state.model, base_url=self.config.base_url
+            )
+        else:
+            client = self.model_client
         harness = CodingAgentHarness(
             model_client=client,
-            working_directory=state.working_directory,
+            working_directory=state.working_directory or self.config.working_directory,
             max_iterations=self.config.max_iterations,
             thread_id=state.thread_id,
-            permission_mode=state.permission_mode,
+            permission_mode=state.permission_mode or self.config.permission_mode,
             initial_messages=state.messages or None,
             mcp_cache=self.config.mcp_cache,
             mcp_client=self.config.mcp_client,
@@ -128,7 +178,105 @@ class TelegramCodexAgent:
 
     def _model_for_harness(self, harness: CodingAgentHarness) -> str:
         client = harness.model_client
-        return getattr(client, "model", self.config.model)
+        return getattr(client, "model", None) or self.config.model or self.model_label
+
+    @staticmethod
+    def _short(value: Any, limit: int = 80) -> str:
+        text = str(value)
+        return text if len(text) <= limit else text[: limit - 1] + "…"
+
+    def _stream_prompt(
+        self, harness: CodingAgentHarness, prompt: str
+    ) -> Generator[str, None, None]:
+        """Run a model-driven prompt, yielding a line per tool start/finish + reply."""
+        runner = harness.run(prompt)
+        while True:
+            try:
+                event = next(runner)
+            except StopIteration as done:
+                if done.value:
+                    yield str(done.value)
+                break
+            except Exception as exc:  # surface model/tool failures to the chat
+                yield f"⚠ error: {exc}"
+                break
+            if isinstance(event, ToolCallStartedEvent):
+                yield f"⚙ {event.tool_name} {self._short(event.args)}"
+            elif isinstance(event, ToolCallCompletedEvent):
+                status = "ok" if event.error is None else f"error: {event.error}"
+                yield f"{'✓' if event.error is None else '✗'} {event.tool_name} ({status})"
+
+    def _stream_mission(
+        self, chat_id: str, objective: str, *, perpetual: bool
+    ) -> Generator[str, None, None]:
+        """Drive the autonomous master loop for an objective, streaming progress."""
+        if not objective:
+            yield "Usage: /mission <objective>   (or /auto for a perpetual run)"
+            return
+        if self.model_client is None:
+            yield self._no_model_hint()
+            return
+        if chat_id in self._missions:
+            yield "A mission is already running. Send /stop first."
+            return
+
+        harness = self._harness_for_chat(chat_id)
+        self._stop_flags[chat_id] = False
+        master = MasterLoopHarness(
+            harness,
+            should_continue=lambda _snapshot: not self._stop_flags.get(chat_id, False),
+        )
+        self._missions[chat_id] = master
+        mode = "perpetual" if perpetual else f"{self.config.mission_cycles} cycle(s)"
+        yield f"🚀 mission started ({mode}): {objective}"
+
+        spec = MissionLoopSpec(
+            objective=objective,
+            max_cycles=None if perpetual else self.config.mission_cycles,
+            perpetual=perpetual,
+        )
+        try:
+            runner = master.run(spec)
+            while True:
+                try:
+                    event = next(runner)
+                except StopIteration as done:
+                    if done.value:
+                        yield f"🏁 {self._short(done.value, 300)}"
+                    break
+                for line in self._mission_progress(event):
+                    yield line
+        except Exception as exc:
+            yield f"⚠ mission error: {exc}"
+        finally:
+            self._missions.pop(chat_id, None)
+            self._stop_flags.pop(chat_id, None)
+            self._persist(chat_id, harness)
+
+    def _mission_progress(self, event: Any) -> list[str]:
+        """Translate a master-loop event into concise chat lines (or nothing)."""
+        if isinstance(event, ToolCallStartedEvent):
+            return [f"⚙ {event.tool_name} {self._short(event.args)}"]
+        if isinstance(event, ToolCallCompletedEvent):
+            mark = "✓" if event.error is None else "✗"
+            tail = "" if event.error is None else f" error: {event.error}"
+            return [f"{mark} {event.tool_name}{tail}"]
+        if isinstance(event, LoopLifecycleEvent):
+            node = event.node
+            kind = node.get("kind")
+            if event.event_type == "loop.completed" and kind in {"mission", "goal"}:
+                return [f"✅ {kind} complete: {node.get('name', '')}"]
+            if event.event_type == "loop.failed":
+                return [f"❌ {kind} failed: {self._short(event.message)}"]
+            if event.event_type == "loop.updated" and kind == "mission":
+                return [f"🔄 {self._short(event.message)}"]
+        return []
+
+    def _stop(self, chat_id: str) -> str:
+        if chat_id not in self._missions:
+            return "No mission is running."
+        self._stop_flags[chat_id] = True
+        return "🛑 Stopping after the current step…"
 
     def _handle_command(self, chat_id: str, text: str) -> str:
         name, _, raw_args = text.partition(" ")
@@ -151,7 +299,9 @@ class TelegramCodexAgent:
         if command == "model":
             if not args:
                 return f"Model: {self._model_for_harness(harness)}"
-            harness.model_client = OpenAICompatibleChatClient(model=args, base_url=self.config.base_url)
+            client, _ = detect_chat_client(model=args)
+            harness.model_client = client
+            self.model_client = client
             self._persist(chat_id, harness)
             return f"Model set to {args}"
         if command == "cd":
@@ -190,7 +340,7 @@ class TelegramCodexAgent:
             self._persist(chat_id, harness)
             return output
         if command == "compact":
-            harness._messages = self._compact_messages(harness.messages)  # noqa: SLF001
+            harness.set_messages(self._compact_messages(harness.messages))
             self._persist(chat_id, harness)
             return "Transcript compacted."
         if command == "init":
@@ -211,8 +361,7 @@ class TelegramCodexAgent:
             self._active_threads[chat_id] = state.thread_id
             return f"Started new session {state.thread_id}"
         if command == "clear":
-            harness.agent.clear_history()
-            harness._messages = harness.messages[:1]  # noqa: SLF001
+            harness.clear_transcript()
             self._persist(chat_id, harness)
             return "Current transcript cleared."
         if command == "mcp":

@@ -20,7 +20,7 @@ def test_status_and_permissions_commands(tmp_path) -> None:
     agent = _agent(tmp_path)
     status = agent.handle_text(123, "/status")
     assert "Thread:" in status
-    assert "Permissions: workspace" in status
+    assert "Permissions: full-access" in status  # autonomous default
 
     changed = agent.handle_text(123, "/permissions read-only")
     assert "read-only" in changed
@@ -69,3 +69,27 @@ def test_mcp_without_config_reports_empty(tmp_path) -> None:
     agent = _agent(tmp_path)
     output = agent.handle_text(123, "/mcp")
     assert "No MCP tools configured" in output
+
+
+def test_help_lists_autonomous_commands(tmp_path) -> None:
+    agent = _agent(tmp_path)
+    help_text = "\n".join(agent.stream(123, "/help"))
+    assert "/mission" in help_text
+    assert "/auto" in help_text
+    assert "/stop" in help_text
+
+
+def test_stop_and_empty_mission_messaging(tmp_path) -> None:
+    agent = _agent(tmp_path)
+    assert "No mission is running" in "\n".join(agent.stream(123, "/stop"))
+    assert "Usage: /mission" in "\n".join(agent.stream(123, "/mission"))
+
+
+def test_clear_transcript_keeps_system_message(tmp_path) -> None:
+    agent = _agent(tmp_path)
+    harness = agent._harness_for_chat("123")  # noqa: SLF001
+    harness.set_messages(harness.messages + [{"role": "user", "content": "hi"}])
+    assert len(harness.messages) >= 2
+    harness.clear_transcript()
+    assert len(harness.messages) == 1
+    assert harness.messages[0]["role"] == "system"
