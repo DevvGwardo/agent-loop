@@ -25,7 +25,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from agent_loop.harness import CodingAgentHarness
-from agent_loop.llm import detect_chat_client
+from agent_loop.llm import detect_chat_client, handle_command, is_command
 from agent_loop.master_loop import LoopLifecycleEvent, MasterLoopHarness, MissionLoopSpec
 from agent_loop.mcp import load_mcp_config
 from agent_loop.models import ToolCallCompletedEvent, ToolCallDeltaEvent, ToolCallStartedEvent
@@ -109,6 +109,23 @@ def main() -> None:
             text = msg.get("text", "")
             if not text:
                 continue
+            # Slash commands (model/provider/key management) — handled
+            # locally, hermes-agent style, before the LLM sees anything.
+            if is_command(text):
+                try:
+                    result = handle_command(text, current_label=model_label)
+                except Exception as exc:
+                    emit({"type": "error", "message": str(exc)})
+                    continue
+                if result.client is not None:
+                    model_client = result.client
+                    model_label = result.model_label or model_label
+                    harness.model_client = model_client  # in-place switch, keeps conversation
+                    emit({"type": "config", "model": model_label})
+                emit({"type": "reply", "text": result.reply})
+                emit({"type": "done"})
+                continue
+
             run_as_mission = msg_type == "mission" or text.startswith("/mission ")
             if text.startswith("/mission "):
                 text = text.removeprefix("/mission ").strip()
@@ -139,9 +156,12 @@ def main() -> None:
                             "code on my own. You can still use me right now:\n"
                             "  • /shell <command>  — run any shell command\n"
                             "  • /mission <objective>  — drive the master loop\n\n"
-                            "To enable model-driven chat, set an API key (e.g. OPENAI_API_KEY, "
-                            "OPENROUTER_API_KEY, GROQ_API_KEY) or AGENT_LOOP_MODEL, then relaunch "
-                            "`loop`. A repo-root .env file is picked up automatically."
+                            "To enable model-driven chat right here:\n"
+                            "  • /apikey <provider> <key>  — e.g. /apikey groq gsk_...\n"
+                            "  • /provider <slug>  — activate it (no relaunch needed)\n"
+                            "  • /models  — see all providers; /help for everything\n"
+                            "Env vars (OPENAI_API_KEY, GROQ_API_KEY, …) and a repo-root .env "
+                            "also work on relaunch."
                         ),
                     })
                     emit({"type": "done"})

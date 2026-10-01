@@ -84,6 +84,11 @@ export interface ByeEvent extends BridgeEvent {
   type: "bye";
 }
 
+export interface ConfigEvent extends BridgeEvent {
+  type: "config";
+  model: string;
+}
+
 export type AgentEvent =
   | ReadyEvent
   | StartedEvent
@@ -93,7 +98,8 @@ export type AgentEvent =
   | LoopEvent
   | DoneEvent
   | ErrorEvent
-  | ByeEvent;
+  | ByeEvent
+  | ConfigEvent;
 
 // Tool call state tracked by the UI
 export interface ToolCallState {

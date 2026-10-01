@@ -103,6 +103,10 @@ export function useBridge() {
         setLoopSnapshot(event.loop_snapshot ?? null);
         break;
       }
+      case "config": {
+        setModel((event as { model?: string }).model ?? "none");
+        break;
+      }
       case "loop": {
         const le = event as LoopEvent;
         setLoopSnapshot(le.snapshot);

@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AGENT-LOOP // ANTI MANUAL v0.1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&family=Permanent+Marker&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f4ff00;
+      --ink: #0a0a0a;
+      --hot: #ff0040;
+      --cold: #00f0ff;
+      --mud: #8b5a2b;
+      --paper: #fffef2;
+      --line: 4px solid var(--ink);
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: auto;
+    }
+
+    body {
+      margin: 0;
+      background:
+        repeating-linear-gradient(90deg, transparent 0 38px, rgba(0,0,0,.04) 38px 39px),
+        repeating-linear-gradient(0deg, transparent 0 38px, rgba(0,0,0,.04) 38px 39px),
+        var(--bg);
+      color: var(--ink);
+      font-family: "IBM Plex Mono", "Courier New", monospace;
+      font-size: 15px;
+      line-height: 1.45;
+      cursor: crosshair;
+    }
+
+    ::selection {
+      background: var(--hot);
+      color: var(--paper);
+    }
+
+    a {
+      color: var(--hot);
+      text-decoration: underline wavy var(--cold);
+      text-underline-offset: 3px;
+    }
+
+    a:hover {
+      background: var(--ink);
+      color: var(--bg);
+      text-decoration: none;
+    }
+
+    .noise {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      opacity: .07;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      z-index: 9999;
+    }
+
+    .stamp {
+      position: fixed;
+      top: 12px;
+      right: -28px;
+      rotate: 12deg;
+      background: var(--hot);
+      color: var(--paper);
+      border: var(--line);
+      padding: .35rem 2.5rem;
+      font-family: "Permanent Marker", cursive;
+      font-size: 1.1rem;
+      z-index: 100;
+      box-shadow: 8px 8px 0 var(--ink);
+    }
+
+    header {
+      border-bottom: var(--line);
+      background: var(--ink);
+      color: var(--bg);
+      padding: 1.25rem clamp(1rem, 4vw, 2.5rem);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    header h1 {
+      margin: 0;
+      font-family: "Permanent Marker", cursive;
+      font-size: clamp(2rem, 8vw, 4.5rem);
+      letter-spacing: -.02em;
+      line-height: .9;
+      text-transform: uppercase;
+    }
+
+    header p {
+      margin: .75rem 0 0;
+      max-width: 62ch;
+      color: var(--cold);
+    }
+
+    .marquee-wrap {
+      overflow: hidden;
+      border-bottom: var(--line);
+      background: var(--hot);
+      color: var(--paper);
+      font-weight: 700;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .marquee {
+      display: inline-block;
+      padding: .45rem 0;
+      animation: scroll 28s linear infinite;
+    }
+
+    @keyframes scroll {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: calc(100vh - 200px);
+    }
+
+    nav {
+      border-right: var(--line);
+      background: var(--paper);
+      padding: 1rem;
+      position: sticky;
+      top: 118px;
+      align-self: start;
+      max-height: calc(100vh - 130px);
+      overflow: auto;
+    }
+
+    nav h2 {
+      font-size: .75rem;
+      margin: 0 0 .75rem;
+      text-transform: uppercase;
+      letter-spacing: .15em;
+      background: var(--cold);
+      display: inline-block;
+      padding: .15rem .35rem;
+      border: 2px solid var(--ink);
+    }
+
+    nav ul {
+      list-style: square;
+      padding-left: 1.1rem;
+      margin: 0 0 1.25rem;
+    }
+
+    nav li { margin: .35rem 0; }
+
+    main {
+      padding: clamp(1rem, 3vw, 2.5rem);
+    }
+
+    section {
+      margin-bottom: 3rem;
+      scroll-margin-top: 140px;
+    }
+
+    h2.section-title {
+      font-family: "Permanent Marker", cursive;
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      margin: 0 0 1rem;
+      text-transform: uppercase;
+      display: inline-block;
+      background: var(--bg);
+      border: var(--line);
+      padding: .2rem .6rem;
+      box-shadow: 6px 6px 0 var(--hot);
+      rotate: -.6deg;
+    }
+
+    h3 {
+      margin: 1.5rem 0 .5rem;
+      font-size: 1rem;
+      text-decoration: underline;
+      text-decoration-thickness: 3px;
+      text-decoration-color: var(--hot);
+    }
+
+    p { max-width: 72ch; }
+
+    .warn {
+      border: var(--line);
+      background: var(--hot);
+      color: var(--paper);
+      padding: .75rem 1rem;
+      margin: 1rem 0;
+      box-shadow: 5px 5px 0 var(--ink);
+      max-width: 72ch;
+    }
+
+    .ok {
+      border: var(--line);
+      background: var(--cold);
+      padding: .75rem 1rem;
+      margin: 1rem 0;
+      box-shadow: 5px 5px 0 var(--ink);
+      max-width: 72ch;
+    }
+
+    .stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      max-width: 520px;
+      margin: 1.25rem 0;
+      border: var(--line);
+      background: var(--paper);
+    }
+
+    .stack div {
+      border-bottom: 2px dashed var(--ink);
+      padding: .55rem .8rem;
+      position: relative;
+      padding-left: 2.2rem;
+    }
+
+    .stack div:last-child { border-bottom: none; }
+
+    .stack div::before {
+      content: "↓";
+      position: absolute;
+      left: .55rem;
+      font-weight: 700;
+      color: var(--hot);
+    }
+
+    .stack div:first-child::before { content: "◎"; }
+
+    .stack strong {
+      display: inline-block;
+      min-width: 7rem;
+      text-transform: uppercase;
+      font-size: .8rem;
+      letter-spacing: .08em;
+    }
+
+    pre, code {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: .86rem;
+    }
+
+    pre {
+      border: var(--line);
+      background: var(--ink);
+      color: #b8ffb8;
+      padding: 1rem;
+      overflow: auto;
+      margin: 1rem 0;
+      box-shadow: inset 0 0 0 3px var(--cold);
+      max-width: 100%;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      border: var(--line);
+      background: var(--paper);
+    }
+
+    th, td {
+      border: 2px solid var(--ink);
+      padding: .45rem .55rem;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--ink);
+      color: var(--bg);
+      text-transform: uppercase;
+      font-size: .72rem;
+      letter-spacing: .12em;
+    }
+
+    tr:nth-child(even) td { background: rgba(255, 0, 64, .08); }
+
+    .tag {
+      display: inline-block;
+      border: 2px solid var(--ink);
+      padding: .1rem .35rem;
+      margin: .15rem .2rem .15rem 0;
+      font-size: .72rem;
+      text-transform: uppercase;
+      background: var(--bg);
+    }
+
+    .tag.live { background: var(--cold); }
+    .tag.offline { background: #ccc; }
+
+    .float-box {
+      float: right;
+      width: min(280px, 40vw);
+      margin: 0 0 1rem 1.25rem;
+      border: var(--line);
+      background: var(--mud);
+      color: var(--paper);
+      padding: .75rem;
+      rotate: 1.5deg;
+      font-size: .82rem;
+    }
+
+    footer {
+      border-top: var(--line);
+      padding: 1.5rem;
+      background: var(--ink);
+      color: var(--bg);
+      font-size: .8rem;
+    }
+
+    @media (max-width: 860px) {
+      .layout { grid-template-columns: 1fr; }
+      nav {
+        position: static;
+        max-height: none;
+        border-right: none;
+        border-bottom: var(--line);
+      }
+      .float-box {
+        float: none;
+        width: 100%;
+        rotate: 0;
+        margin: 1rem 0;
+      }
+      .stamp { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="stamp">UNAPPROVED</div>
+
+  <header>
+    <h1>Agent-Loop<br />Anti Manual</h1>
+    <p>Readable docs for people who hate readable docs. Streaming agent protocol. Master missions. Tool loops. No gradients. No mercy.</p>
+  </header>
+
+  <div class="marquee-wrap" aria-hidden="true">
+    <div class="marquee">
+      master → mission → goal → agent → workflow → tool &nbsp;•&nbsp;
+      ToolCallStartedEvent → ToolCallDeltaEvent → ToolCallCompletedEvent &nbsp;•&nbsp;
+      /mission in TUI &nbsp;•&nbsp; mode:mission in child bridge &nbsp;•&nbsp;
+      master → mission → goal → agent → workflow → tool &nbsp;•&nbsp;
+    </div>
+  </div>
+
+  <div class="layout">
+    <nav>
+      <h2>Jump</h2>
+      <ul>
+        <li><a href="#what">What</a></li>
+        <li><a href="#stream">Streaming</a></li>
+        <li><a href="#tools">Tools</a></li>
+        <li><a href="#llm">LLM</a></li>
+        <li><a href="#harness">Harness</a></li>
+        <li><a href="#master">Master Loop</a></li>
+        <li><a href="#bridge">Bridges</a></li>
+        <li><a href="#tui">TUI</a></li>
+        <li><a href="#deepseek">DeepSeek / Hermes</a></li>
+        <li><a href="#env">Env Vars</a></li>
+        <li><a href="#test">Testing</a></li>
+      </ul>
+      <h2>Repo</h2>
+      <ul>
+        <li><a href="https://github.com/DevvGwardo/agent-loop">GitHub</a></li>
+        <li><a href="../README.md">README.md</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <section id="what">
+        <h2 class="section-title">What is this</h2>
+        <p><strong>agent-loop</strong> is a reference implementation of a streaming AI coding agent protocol. Model-agnostic core. Tool executors. NDJSON bridges. A mission orchestration layer when one prompt is not enough.</p>
+        <div class="float-box">
+          <strong>IN ONE BREATH:</strong><br />
+          Python package + Ink TUI + child-process bridge. You plug in a tool-calling model (or replay a fixed tool sequence) and get structured lifecycle events at every layer.
+        </div>
+        <pre>pip install -e .
+python3 -m pytest -q
+cd tui && npm install && npm run build</pre>
+      </section>
+
+      <section id="stream">
+        <h2 class="section-title">Streaming lifecycle</h2>
+        <p>Every tool call follows the same three beats. Adapters (TUI, Telegram, headless controllers) render from these — they do not guess.</p>
+        <table>
+          <thead>
+            <tr><th>Event</th><th>Meaning</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>ToolCallStartedEvent</code></td><td>About to run tool X with args</td></tr>
+            <tr><td><code>ToolCallDeltaEvent</code></td><td>Incremental output (stdout, stderr, thinking)</td></tr>
+            <tr><td><code>ToolCallCompletedEvent</code></td><td>Final result or error</td></tr>
+          </tbody>
+        </table>
+        <pre>from agent_loop import Agent
+from agent_loop.tools import ShellExecutor, ReadExecutor
+
+agent = Agent()
+agent.register_tool(ShellExecutor())
+agent.register_tool(ReadExecutor())
+
+for event in agent.run("list the current directory"):
+    print(event.event_type, event.tool_name)</pre>
+      </section>
+
+      <section id="tools">
+        <h2 class="section-title">Tool executors</h2>
+        <table>
+          <thead>
+            <tr><th>Tool</th><th>Args (main)</th><th>Streams?</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>shell</code></td><td>command, working_directory, timeout, env</td><td>yes</td></tr>
+            <tr><td><code>read</code></td><td>path, offset, limit</td><td>no</td></tr>
+            <tr><td><code>edit</code></td><td>path, mode, old/new content</td><td>no</td></tr>
+            <tr><td><code>grep</code></td><td>pattern, path, file_glob, context</td><td>no</td></tr>
+            <tr><td><code>glob</code></td><td>pattern, path</td><td>no</td></tr>
+            <tr><td><code>web_fetch</code></td><td>url, timeout, max_size</td><td>no</td></tr>
+            <tr><td><code>web_search</code></td><td>query</td><td>no</td></tr>
+            <tr><td><code>update_plan</code></td><td>plan steps</td><td>no</td></tr>
+            <tr><td><code>mcp__*</code></td><td>per MCP tool schema</td><td>varies</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="llm">
+        <h2 class="section-title">LLM integration</h2>
+        <p><code>LLMAgent</code> drives a call-and-respond loop against a named provider. <code>OpenAICompatibleChatClient</code> is what <code>CodingAgentHarness</code> uses for OpenAI-shaped endpoints.</p>
+        <table>
+          <thead>
+            <tr><th>Provider</th><th>Env var</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>openai</td><td><code>OPENAI_API_KEY</code></td></tr>
+            <tr><td>openrouter</td><td><code>OPENROUTER_API_KEY</code></td></tr>
+            <tr><td>groq</td><td><code>GROQ_API_KEY</code></td></tr>
+            <tr><td>deepseek</td><td><code>DEEPSEEK_API_KEY</code></td></tr>
+            <tr><td>anthropic</td><td><code>ANTHROPIC_API_KEY</code></td></tr>
+            <tr><td>ollama</td><td><em>local, optional</em></td></tr>
+            <tr><td>scripted</td><td><em>offline tests</em></td></tr>
+          </tbody>
+        </table>
+        <pre>from agent_loop.llm import LLMAgent
+from agent_loop.tools import ShellExecutor, ReadExecutor
+
+agent = LLMAgent(
+    provider="openrouter",
+    model="deepseek/deepseek-v4-flash",
+    executors=[ShellExecutor(), ReadExecutor()],
+)
+for event in agent.run("list python files"):
+    print(event)</pre>
+      </section>
+
+      <section id="harness">
+        <h2 class="section-title">Coding harness</h2>
+        <p><code>CodingAgentHarness</code> wires local tools to a tool-calling model, keeps conversation history, injects workspace context (<code>AGENTS.md</code>, git status), and yields the same streaming events as <code>Agent.run()</code>.</p>
+        <pre>from agent_loop import CodingAgentHarness, OpenAICompatibleChatClient
+
+model = OpenAICompatibleChatClient(
+    model="deepseek-v4-flash",
+    base_url="https://opencode.ai/zen/go/v1",
+    api_key="your-key",
+)
+harness = CodingAgentHarness(model_client=model, working_directory="/path/to/repo")
+
+runner = harness.run("inspect the repo and run tests")
+while True:
+    try:
+        print(next(runner))
+    except StopIteration as done:
+        print("reply:", done.value)
+        break</pre>
+      </section>
+
+      <section id="master">
+        <h2 class="section-title">Master loop harness</h2>
+        <p>When a single prompt is too small. <code>MasterLoopHarness</code> runs long-lived missions that expand into goals, agents, workflows, and tool loops. Every layer emits <code>LoopLifecycleEvent</code> snapshots.</p>
+
+        <div class="stack" aria-label="loop hierarchy">
+          <div><strong>master</strong> top orchestrator</div>
+          <div><strong>mission</strong> objective + cycles (finite or perpetual)</div>
+          <div><strong>goal</strong> repeatable goal iterations</div>
+          <div><strong>agent</strong> spawns workflows per goal</div>
+          <div><strong>workflow</strong> one unit of work (LLM or tool_sequence)</div>
+          <div><strong>tool</strong> wraps each ToolCall* event</div>
+        </div>
+
+        <h3>Python</h3>
+        <pre>from agent_loop import (
+    CodingAgentHarness,
+    MasterLoopHarness,
+    MissionLoopSpec,
+    GoalLoopSpec,
+    AgentLoopSpec,
+    WorkflowLoopSpec,
+)
+from agent_loop.tools import ShellExecutor
+
+coding = CodingAgentHarness(executors=[ShellExecutor()])
+master = MasterLoopHarness(coding)
+
+mission = MissionLoopSpec(
+    objective="Keep the repo healthy",
+    max_cycles=2,
+    goals=[
+        GoalLoopSpec(
+            name="verify",
+            objective="Run a lightweight health check",
+            agents=[
+                AgentLoopSpec(
+                    name="maintainer",
+                    workflows=[
+                        WorkflowLoopSpec(
+                            name="tests",
+                            tool_sequence=[
+                                {"tool": "shell", "args": {"command": "pytest -q"}}
+                            ],
+                        )
+                    ],
+                )
+            ],
+        )
+    ],
+)
+
+for event in master.run(mission):
+    print(event)</pre>
+
+        <h3>Mission spec knobs</h3>
+        <table>
+          <thead>
+            <tr><th>Field</th><th>Default</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>objective</code></td><td>required</td><td>Also accepts <code>task</code>, <code>text</code> in JSON</td></tr>
+            <tr><td><code>max_cycles</code></td><td>1</td><td>Set higher for repeated mission passes</td></tr>
+            <tr><td><code>perpetual</code></td><td>false</td><td>Keep cycling until <code>should_continue</code> returns false</td></tr>
+            <tr><td><code>stop_on_error</code></td><td>true</td><td>Fail fast up the tree</td></tr>
+            <tr><td><code>tool_sequence</code></td><td>—</td><td>Deterministic tools without a model (child bridge)</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="bridge">
+        <h2 class="section-title">Bridges (NDJSON)</h2>
+        <p>Two stdin/stdout bridges speak JSON lines. Controllers spawn them as child processes.</p>
+
+        <h3>Headless: <code>scripts/run-as-child.py</code></h3>
+        <span class="tag offline">no model OK</span>
+        <span class="tag live">mode: mission</span>
+        <pre>echo '{
+  "mode": "mission",
+  "task": "check cwd",
+  "tool_sequence": [
+    {"tool": "shell", "args": {"command": "pwd"}, "call_id": "call_pwd"}
+  ]
+}' | python3 scripts/run-as-child.py</pre>
+        <p>Emits <code>loop_event</code>, <code>tool_started</code>, <code>tool_delta</code>, <code>tool_completed</code>, <code>done</code> with <code>loop_snapshot</code>.</p>
+
+        <h3>TUI backend: <code>tui/bridge.py</code></h3>
+        <span class="tag live">needs model for LLM missions</span>
+        <pre>{"type": "ready", "tools": [...], "loop_snapshot": {...}}
+{"type": "mission", "text": "run shell: echo hello"}
+{"type": "loop", "event": "loop.started", "node": {...}, "snapshot": {...}}
+{"type": "started", "call_id": "...", "tool_name": "shell", "args": {...}}
+{"type": "completed", "call_id": "...", "result": {...}}
+{"type": "reply", "text": "..."}
+{"type": "done"}</pre>
+      </section>
+
+      <section id="tui">
+        <h2 class="section-title">Ink TUI</h2>
+        <p>React + Ink terminal UI. Spawns <code>tui/bridge.py</code>. Shows a <strong>LoopDashboard</strong> tree with mission metrics and active-path highlighting.</p>
+        <pre>cd tui && npm install && npm start</pre>
+        <ul>
+          <li><code>/mission &lt;task&gt;</code> — route through master loop</li>
+          <li><code>/shell &lt;cmd&gt;</code> — deterministic shell (no model)</li>
+          <li>Plain prompt — model-driven harness turn (needs <code>AGENT_LOOP_MODEL</code>)</li>
+        </ul>
+        <p>Env: <code>AGENT_LOOP_MISSION_CYCLES</code> (finite repeats), <code>AGENT_LOOP_PERPETUAL=1</code> (keep going).</p>
+      </section>
+
+      <section id="deepseek">
+        <h2 class="section-title">DeepSeek v4 Flash (Hermes route)</h2>
+        <div class="ok">
+          <strong>Verified E2E:</strong> <code>deepseek-v4-flash</code> via OpenCode Zen Go + mission bridge. Chat, tool-calling, and full master loop completion.
+        </div>
+        <pre>export AGENT_LOOP_MODEL=deepseek-v4-flash
+export AGENT_LOOP_BASE_URL=https://opencode.ai/zen/go/v1
+export AGENT_LOOP_API_KEY="$OPENCODE_GO_API_KEY"
+
+printf '%s\n%s\n' \
+  '{"type":"mission","text":"run shell: echo mission-llm-ok"}' \
+  '{"type":"exit"}' | python3 tui/bridge.py</pre>
+        <p>Same model on OpenRouter: <code>deepseek/deepseek-v4-flash</code> with <code>AGENT_LOOP_BASE_URL=https://openrouter.ai/api/v1</code> and <code>OPENROUTER_API_KEY</code>.</p>
+        <div class="warn">
+          Do not paste API keys into chat or commit them. Use env vars or Hermes <code>credential_pool</code>.
+        </div>
+      </section>
+
+      <section id="env">
+        <h2 class="section-title">Environment variables</h2>
+        <table>
+          <thead>
+            <tr><th>Variable</th><th>Purpose</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>AGENT_LOOP_MODEL</code></td><td>Tool-calling model id for harness / TUI bridge</td></tr>
+            <tr><td><code>AGENT_LOOP_BASE_URL</code></td><td>OpenAI-compatible API base (default: OpenAI)</td></tr>
+            <tr><td><code>AGENT_LOOP_API_KEY</code></td><td>API key for harness client</td></tr>
+            <tr><td><code>AGENT_LOOP_WORKDIR</code></td><td>Workspace root</td></tr>
+            <tr><td><code>AGENT_LOOP_PERMISSION_MODE</code></td><td><code>read-only</code> | <code>workspace</code> | <code>full-access</code></td></tr>
+            <tr><td><code>AGENT_LOOP_MISSION_CYCLES</code></td><td>Finite mission repeats in TUI bridge</td></tr>
+            <tr><td><code>AGENT_LOOP_PERPETUAL</code></td><td><code>1</code> for perpetual mission loop</td></tr>
+            <tr><td><code>AGENT_LOOP_MCP_URL</code></td><td>HTTP MCP bridge endpoint</td></tr>
+            <tr><td><code>TELEGRAM_BOT_TOKEN</code></td><td>Telegram adapter (<code>examples/telegram_agent.py</code>)</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="test">
+        <h2 class="section-title">Testing</h2>
+        <pre># unit + integration
+python3 -m pytest -q
+
+# TUI types
+cd tui && npm run build
+
+# deterministic mission E2E (no model)
+printf '%s' '{"mode":"mission","task":"ok","tool_sequence":[{"tool":"shell","args":{"command":"echo ok"},"call_id":"c1"}]}' \
+  | python3 scripts/run-as-child.py</pre>
+        <p>LLM mission E2E needs a tool-calling model with shell access. OpenCode Go + DeepSeek v4 Flash is the Hermes-default path.</p>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    agent-loop · MIT · this page is intentionally ugly · last built for master loop harness docs · no Inter font was harmed because we never used it
+  </footer>
+</body>
+</html>
