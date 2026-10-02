@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/banner.jpg" alt="agent-loop Banner" />
+</p>
+
 # agent-loop
 
 A reference implementation of a streaming AI coding agent protocol.
