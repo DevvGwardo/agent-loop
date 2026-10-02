@@ -1,77 +1,234 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="520" viewBox="0 0 1600 520" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 580" width="1600" height="580" role="img" aria-labelledby="title desc">
   <title id="title">agent-loop streaming lifecycle diagram</title>
   <desc id="desc">A three-stage diagram showing the started, delta, and completed events emitted during tool execution.</desc>
   <defs>
-    <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#071118"/>
-      <stop offset="100%" stop-color="#0b1a26"/>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#040911"/>
+      <stop offset="50%" stop-color="#071220"/>
+      <stop offset="100%" stop-color="#030810"/>
     </linearGradient>
-    <linearGradient id="stepA" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#22c7ff"/>
-      <stop offset="100%" stop-color="#13a2ff"/>
+
+    <!-- Card Gradients -->
+    <linearGradient id="cyanGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f0ff"/>
+      <stop offset="100%" stop-color="#0072ff"/>
     </linearGradient>
-    <linearGradient id="stepB" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#56e8d8"/>
-      <stop offset="100%" stop-color="#25c5b3"/>
+    <linearGradient id="mintGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f5d4"/>
+      <stop offset="100%" stop-color="#05b090"/>
     </linearGradient>
-    <linearGradient id="stepC" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#ffd66d"/>
-      <stop offset="100%" stop-color="#ffb84d"/>
+    <linearGradient id="amberGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffd166"/>
+      <stop offset="100%" stop-color="#ff8c00"/>
     </linearGradient>
-    <marker id="arrow2" markerWidth="14" markerHeight="14" refX="10" refY="7" orient="auto" markerUnits="strokeWidth">
-      <path d="M0,0 L14,7 L0,14 z" fill="#8adfff"/>
-    </marker>
-    <filter id="glow2" x="-40%" y="-40%" width="180%" height="180%">
-      <feGaussianBlur stdDeviation="10" result="blur"/>
+    <linearGradient id="cardGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="rgba(13, 27, 46, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(8, 17, 30, 0.95)"/>
+    </linearGradient>
+
+    <!-- Grid Pattern -->
+    <pattern id="grid2" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(0, 240, 255, 0.04)" stroke-width="1"/>
+      <circle cx="40" cy="40" r="1" fill="rgba(0, 240, 255, 0.12)"/>
+    </pattern>
+
+    <!-- Glow Filters -->
+    <filter id="neonGlow2" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
       <feMerge>
         <feMergeNode in="blur"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
+    <filter id="ambientGlow2" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="50" result="blur"/>
+    </filter>
+
+    <!-- Markers -->
+    <marker id="arrowCyan2" markerWidth="10" markerHeight="10" refX="7" refY="5" orient="auto">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#00f0ff"/>
+    </marker>
+    <marker id="arrowMint2" markerWidth="10" markerHeight="10" refX="7" refY="5" orient="auto">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#00f5d4"/>
+    </marker>
+
     <style>
-      .title { font: 700 30px Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #ecfbff; }
-      .subtitle { font: 500 18px Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #a9c8d8; }
-      .head { font: 700 24px Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #e8f7ff; }
-      .body { font: 500 17px Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #a9c8d8; }
-      .card { fill: rgba(11, 26, 38, 0.96); stroke: rgba(110, 215, 255, 0.40); stroke-width: 2; }
-      .ringA { fill: rgba(34, 199, 255, 0.12); stroke: url(#stepA); stroke-width: 4; }
-      .ringB { fill: rgba(86, 232, 216, 0.12); stroke: url(#stepB); stroke-width: 4; }
-      .ringC { fill: rgba(255, 214, 109, 0.12); stroke: url(#stepC); stroke-width: 4; }
-      .line { stroke: #8adfff; stroke-width: 5; fill: none; marker-end: url(#arrow2); }
+      .brand-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; font-size: 28px; font-weight: 800; fill: #ffffff; letter-spacing: -0.5px; }
+      .brand-sub { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; font-size: 15px; font-weight: 400; fill: #799bbb; }
+      .stage-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; font-size: 24px; font-weight: 700; fill: #f0faff; }
+      .stage-event { font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace; font-size: 14px; font-weight: 600; }
+      .body-head { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; font-size: 14px; font-weight: 700; fill: #ffffff; letter-spacing: 0.5px; text-transform: uppercase; }
+      .body-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; font-size: 14.5px; font-weight: 400; fill: #97b5cf; }
+      .code-pill { font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, monospace; font-size: 11px; font-weight: 700; letter-spacing: 1px; }
+      .flow-line { stroke-width: 3; fill: none; }
     </style>
   </defs>
 
-  <rect width="1600" height="520" rx="36" fill="url(#bg2)"/>
-  <text x="80" y="84" class="title">streaming lifecycle</text>
-  <text x="80" y="118" class="subtitle">Every tool call emits started, delta, and completed events without polling.</text>
+  <!-- Deep Canvas Background -->
+  <rect width="1600" height="580" rx="24" fill="url(#bgGrad2)"/>
+  <rect width="1600" height="580" rx="24" fill="url(#grid2)"/>
 
-  <rect x="110" y="185" width="390" height="220" rx="28" class="card"/>
-  <circle cx="220" cy="295" r="62" class="ringA" filter="url(#glow2)"/>
-  <text x="220" y="287" text-anchor="middle" class="head">Started</text>
-  <text x="220" y="317" text-anchor="middle" class="body">ToolCallStartedEvent</text>
-  <text x="330" y="245" class="head" font-size="20">What happens</text>
-  <text x="330" y="281" class="body">- Tool is selected</text>
-  <text x="330" y="309" class="body">- Args are known</text>
-  <text x="330" y="337" class="body">- Approval may be requested</text>
+  <!-- Subtle Glowing Orbs -->
+  <circle cx="280" cy="360" r="140" fill="#0072ff" opacity="0.12" filter="url(#ambientGlow2)"/>
+  <circle cx="800" cy="360" r="140" fill="#00f5d4" opacity="0.1" filter="url(#ambientGlow2)"/>
+  <circle cx="1320" cy="360" r="140" fill="#ffd166" opacity="0.1" filter="url(#ambientGlow2)"/>
 
-  <rect x="605" y="185" width="390" height="220" rx="28" class="card"/>
-  <circle cx="715" cy="295" r="62" class="ringB" filter="url(#glow2)"/>
-  <text x="715" y="287" text-anchor="middle" class="head">Delta</text>
-  <text x="715" y="317" text-anchor="middle" class="body">ToolCallDeltaEvent</text>
-  <text x="825" y="245" class="head" font-size="20">What happens</text>
-  <text x="825" y="281" class="body">- stdout streams live</text>
-  <text x="825" y="309" class="body">- stderr stays visible</text>
-  <text x="825" y="337" class="body">- progress stays incremental</text>
+  <!-- Outer Blueprint Border -->
+  <rect x="24" y="24" width="1552" height="532" rx="20" fill="none" stroke="rgba(0, 240, 255, 0.15)" stroke-width="1.5"/>
 
-  <rect x="1100" y="185" width="390" height="220" rx="28" class="card"/>
-  <circle cx="1210" cy="295" r="62" class="ringC" filter="url(#glow2)"/>
-  <text x="1210" y="287" text-anchor="middle" class="head">Completed</text>
-  <text x="1210" y="317" text-anchor="middle" class="body">ToolCallCompletedEvent</text>
-  <text x="1320" y="245" class="head" font-size="20">What happens</text>
-  <text x="1320" y="281" class="body">- Final result is returned</text>
-  <text x="1320" y="309" class="body">- LLM receives the full output</text>
-  <text x="1320" y="337" class="body">- Next turn can begin</text>
+  <!-- ==================== HEADER ==================== -->
+  <g transform="translate(60, 52)">
+    <!-- Hermes Brand Logo Mark -->
+    <g transform="translate(0, 4) scale(0.75)" filter="url(#neonGlow2)">
+      <!-- Stylized Wings -->
+      <path d="M 0 18 C 12 6, 28 2, 42 10 C 32 16, 26 24, 20 32 Z" fill="#00f0ff" opacity="0.9"/>
+      <path d="M 8 28 C 18 18, 32 14, 46 22 C 38 27, 32 34, 28 40 Z" fill="#00c8ff" opacity="0.7"/>
+      <!-- Infinity Loop Core -->
+      <path d="M 32 26 C 45 12, 65 12, 78 26 C 91 40, 111 40, 124 26 C 137 12, 157 12, 170 26 C 183 40, 163 54, 150 40 C 137 26, 117 26, 104 40 C 91 54, 71 54, 58 40 C 45 26, 25 26, 12 40 Z" 
+            fill="none" stroke="url(#cyanGrad2)" stroke-width="6" stroke-linecap="round"/>
+      <circle cx="170" cy="26" r="4.5" fill="#ffffff"/>
+      <circle cx="32" cy="26" r="4.5" fill="#00f0ff"/>
+    </g>
 
-  <path d="M500 295 L605 295" class="line"/>
-  <path d="M1000 295 L1100 295" class="line"/>
+    <!-- Header Text -->
+    <text x="160" y="32" class="brand-title">AGENT-LOOP <tspan fill="#00f0ff" font-weight="300">//</tspan> STREAMING LIFECYCLE</text>
+    <text x="160" y="58" class="brand-sub">Every tool call emits real-time started, delta, and completed events without polling.</text>
+
+    <!-- Telemetry Tag -->
+    <g transform="translate(1320, 12)">
+      <rect x="0" y="0" width="160" height="28" rx="14" fill="rgba(0, 240, 255, 0.08)" stroke="rgba(0, 240, 255, 0.4)" stroke-width="1"/>
+      <circle cx="16" cy="14" r="4" fill="#00f0ff" filter="url(#neonGlow2)"/>
+      <text x="90" y="18" text-anchor="middle" class="code-pill" fill="#00f0ff">ZERO-POLL SSE</text>
+    </g>
+  </g>
+
+  <!-- ==================== STAGE CARDS ==================== -->
+
+  <!-- STAGE 1: STARTED -->
+  <g transform="translate(60, 150)">
+    <rect width="440" height="340" rx="20" fill="url(#cardGrad2)" stroke="rgba(0, 240, 255, 0.4)" stroke-width="1.5"/>
+    <rect x="1" y="1" width="438" height="4" rx="2" fill="url(#cyanGrad2)"/>
+
+    <!-- Orbital Icon -->
+    <g transform="translate(40, 48)">
+      <circle cx="36" cy="36" r="36" fill="rgba(0, 240, 255, 0.08)" stroke="url(#cyanGrad2)" stroke-width="2.5" filter="url(#neonGlow2)"/>
+      <!-- Pulse dot -->
+      <circle cx="36" cy="36" r="10" fill="#00f0ff"/>
+    </g>
+
+    <!-- Header info -->
+    <g transform="translate(132, 54)">
+      <text x="0" y="0" class="code-pill" fill="#00f0ff">PHASE 01</text>
+      <text x="0" y="28" class="stage-title">Started</text>
+      <text x="0" y="52" class="stage-event" fill="#00f0ff">ToolCallStartedEvent</text>
+    </g>
+
+    <!-- Content Divider -->
+    <line x1="30" y1="140" x2="410" y2="140" stroke="rgba(0, 240, 255, 0.15)" stroke-width="1"/>
+
+    <!-- Lifecycle items -->
+    <g transform="translate(30, 175)">
+      <text x="0" y="0" class="body-head">Execution Signals</text>
+      
+      <circle cx="8" cy="28" r="3.5" fill="#00f0ff"/>
+      <text x="24" y="32" class="body-text">Target tool selected &amp; resolved</text>
+
+      <circle cx="8" cy="62" r="3.5" fill="#00f0ff"/>
+      <text x="24" y="66" class="body-text">Arguments parsed &amp; validated</text>
+
+      <circle cx="8" cy="96" r="3.5" fill="#00f0ff"/>
+      <text x="24" y="100" class="body-text">Human approval gate initiated</text>
+
+      <circle cx="8" cy="130" r="3.5" fill="#00f0ff"/>
+      <text x="24" y="134" class="body-text">Execution process spawned asynchronously</text>
+    </g>
+  </g>
+
+  <!-- Connector 1 -> 2 -->
+  <path d="M 500 320 L 572 320" class="flow-line" stroke="#00f0ff" marker-end="url(#arrowCyan2)"/>
+
+  <!-- STAGE 2: DELTA -->
+  <g transform="translate(580, 150)">
+    <rect width="440" height="340" rx="20" fill="url(#cardGrad2)" stroke="rgba(0, 245, 212, 0.45)" stroke-width="1.5"/>
+    <rect x="1" y="1" width="438" height="4" rx="2" fill="url(#mintGrad2)"/>
+
+    <!-- Orbital Icon -->
+    <g transform="translate(40, 48)">
+      <circle cx="36" cy="36" r="36" fill="rgba(0, 245, 212, 0.08)" stroke="url(#mintGrad2)" stroke-width="2.5" filter="url(#neonGlow2)"/>
+      <!-- Streaming Waveform Icon -->
+      <path d="M 22 36 L 28 26 L 36 46 L 44 24 L 50 36" fill="none" stroke="#00f5d4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+
+    <!-- Header info -->
+    <g transform="translate(132, 54)">
+      <text x="0" y="0" class="code-pill" fill="#00f5d4">PHASE 02 // STREAMING</text>
+      <text x="0" y="28" class="stage-title">Delta Updates</text>
+      <text x="0" y="52" class="stage-event" fill="#00f5d4">ToolCallDeltaEvent</text>
+    </g>
+
+    <!-- Content Divider -->
+    <line x1="30" y1="140" x2="410" y2="140" stroke="rgba(0, 245, 212, 0.15)" stroke-width="1"/>
+
+    <!-- Lifecycle items -->
+    <g transform="translate(30, 175)">
+      <text x="0" y="0" class="body-head">Real-Time Chunking</text>
+      
+      <circle cx="8" cy="28" r="3.5" fill="#00f5d4"/>
+      <text x="24" y="32" class="body-text">stdout streams live chunks to UI</text>
+
+      <circle cx="8" cy="62" r="3.5" fill="#00f5d4"/>
+      <text x="24" y="66" class="body-text">stderr immediately captured &amp; visible</text>
+
+      <circle cx="8" cy="96" r="3.5" fill="#00f5d4"/>
+      <text x="24" y="100" class="body-text">Sub-agent thinking deltas surfaced</text>
+
+      <circle cx="8" cy="130" r="3.5" fill="#00f5d4"/>
+      <text x="24" y="134" class="body-text">Incremental progress with zero latency</text>
+    </g>
+  </g>
+
+  <!-- Connector 2 -> 3 -->
+  <path d="M 1020 320 L 1092 320" class="flow-line" stroke="#00f5d4" marker-end="url(#arrowMint2)"/>
+
+  <!-- STAGE 3: COMPLETED -->
+  <g transform="translate(1100, 150)">
+    <rect width="440" height="340" rx="20" fill="url(#cardGrad2)" stroke="rgba(255, 209, 102, 0.45)" stroke-width="1.5"/>
+    <rect x="1" y="1" width="438" height="4" rx="2" fill="url(#amberGrad2)"/>
+
+    <!-- Orbital Icon -->
+    <g transform="translate(40, 48)">
+      <circle cx="36" cy="36" r="36" fill="rgba(255, 209, 102, 0.08)" stroke="url(#amberGrad2)" stroke-width="2.5" filter="url(#neonGlow2)"/>
+      <!-- Checkmark / Complete Icon -->
+      <path d="M 24 36 L 32 44 L 48 26" fill="none" stroke="#ffd166" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+
+    <!-- Header info -->
+    <g transform="translate(132, 54)">
+      <text x="0" y="0" class="code-pill" fill="#ffd166">PHASE 03 // COMPLETION</text>
+      <text x="0" y="28" class="stage-title">Completed</text>
+      <text x="0" y="52" class="stage-event" fill="#ffd166">ToolCallCompletedEvent</text>
+    </g>
+
+    <!-- Content Divider -->
+    <line x1="30" y1="140" x2="410" y2="140" stroke="rgba(255, 209, 102, 0.15)" stroke-width="1"/>
+
+    <!-- Lifecycle items -->
+    <g transform="translate(30, 175)">
+      <text x="0" y="0" class="body-head">Turn Synthesis</text>
+      
+      <circle cx="8" cy="28" r="3.5" fill="#ffd166"/>
+      <text x="24" y="32" class="body-text">Process exit code &amp; output finalized</text>
+
+      <circle cx="8" cy="62" r="3.5" fill="#ffd166"/>
+      <text x="24" y="66" class="body-text">Structured payload passed back to LLM</text>
+
+      <circle cx="8" cy="96" r="3.5" fill="#ffd166"/>
+      <text x="24" y="100" class="body-text">State machine transitions to next turn</text>
+
+      <circle cx="8" cy="130" r="3.5" fill="#ffd166"/>
+      <text x="24" y="134" class="body-text">Audit logs &amp; telemetry recorded</text>
+    </g>
+  </g>
+
 </svg>
