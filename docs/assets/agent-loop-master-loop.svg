@@ -1,0 +1,241 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 780" width="1600" height="780" role="img" aria-labelledby="mlTitle mlDesc">
+  <title id="mlTitle">agent-loop brutalist master loop hierarchy schematic</title>
+  <desc id="mlDesc">Technical architectural schematic showing the recursive 6-tier orchestration stack of agent-loop.</desc>
+  <defs>
+    <pattern id="brutalistGridML" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#161616" stroke-width="1"/>
+      <path d="M 0 0 L 4 0 M 0 0 L 0 4 M 40 40 L 36 40 M 40 40 L 40 36" fill="none" stroke="#2a2a2a" stroke-width="1"/>
+      <circle cx="40" cy="40" r="1" fill="#333333"/>
+    </pattern>
+
+    <marker id="mlWhite" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <polygon points="0,1 6,4 0,7" fill="#ffffff"/>
+    </marker>
+    <marker id="mlOrange" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <polygon points="0,1 6,4 0,7" fill="#ff3e00"/>
+    </marker>
+    <marker id="mlGreen" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <polygon points="0,1 6,4 0,7" fill="#00ff66"/>
+    </marker>
+
+    <style>
+      .mono { font-family: "JetBrains Mono", "SF Mono", "Roboto Mono", Menlo, Consolas, monospace; }
+      .sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; }
+      .ml-hero { font-weight: 900; font-size: 24px; fill: #ffffff; letter-spacing: 2px; }
+      .ml-sub { font-weight: 600; font-size: 11px; fill: #777777; letter-spacing: 1.5px; }
+      .ml-head { font-weight: 800; font-size: 12px; letter-spacing: 1px; }
+      .ml-title { font-weight: 800; font-size: 16px; fill: #ffffff; letter-spacing: -0.3px; }
+      .ml-body { font-weight: 500; font-size: 12px; fill: #888888; line-height: 1.4; }
+      .ml-code { font-weight: 700; font-size: 11px; }
+      .ml-badge { font-weight: 800; font-size: 10px; letter-spacing: 1.2px; }
+      .wire-w { stroke: #ffffff; stroke-width: 2; fill: none; marker-end: url(#mlWhite); }
+      .wire-o { stroke: #ff3e00; stroke-width: 2; fill: none; marker-end: url(#mlOrange); }
+      .wire-g { stroke: #00ff66; stroke-width: 2; fill: none; marker-end: url(#mlGreen); }
+      .wire-dash { stroke: #444444; stroke-width: 1.5; stroke-dasharray: 4 4; fill: none; }
+    </style>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect width="1600" height="780" fill="#090909"/>
+  <rect width="1600" height="780" fill="url(#brutalistGridML)"/>
+
+  <!-- Outer Frame -->
+  <rect x="20" y="20" width="1560" height="740" fill="none" stroke="#222222" stroke-width="2"/>
+  <rect x="24" y="24" width="1552" height="732" fill="none" stroke="#161616" stroke-width="1"/>
+
+  <!-- Corner Crop Marks -->
+  <g stroke="#ffffff" stroke-width="1.5" opacity="0.8">
+    <path d="M 20 40 L 40 40 M 40 20 L 40 40"/>
+    <path d="M 1580 40 L 1560 40 M 1560 20 L 1560 40"/>
+    <path d="M 20 740 L 40 740 M 40 760 L 40 740"/>
+    <path d="M 1580 740 L 1560 740 M 1560 760 L 1560 740"/>
+  </g>
+
+  <!-- Header -->
+  <g transform="translate(50, 48)">
+    <rect x="0" y="0" width="34" height="34" fill="#ffffff"/>
+    <rect x="9" y="9" width="16" height="16" fill="#090909"/>
+    <rect x="14" y="14" width="6" height="6" fill="#ff3e00"/>
+
+    <text x="48" y="24" class="sans ml-hero">AGENT-LOOP</text>
+    <text x="248" y="24" class="mono ml-hero" fill="#ff3e00" font-weight="400">//</text>
+    <text x="280" y="24" class="mono" font-size="15" font-weight="700" fill="#aaaaaa" letter-spacing="1.5px">SPEC: MASTER LOOP ORCHESTRATION HIERARCHY</text>
+    <text x="50" y="42" class="mono ml-sub">RECURSIVE 6-TIER EXECUTION STACK • PERPETUAL &amp; FINITE MISSIONS • ATOMIC LIFECYCLE TELEMETRY</text>
+
+    <!-- Header Badges -->
+    <g transform="translate(1090, 4)">
+      <rect x="0" y="0" width="130" height="26" fill="#141414" stroke="#333333" stroke-width="1"/>
+      <rect x="0" y="0" width="6" height="26" fill="#00ff66"/>
+      <text x="14" y="17" class="mono ml-badge" fill="#ffffff">STACK: 6-TIER</text>
+
+      <rect x="142" y="0" width="120" height="26" fill="#141414" stroke="#333333" stroke-width="1"/>
+      <rect x="142" y="0" width="6" height="26" fill="#ff3e00"/>
+      <text x="156" y="17" class="mono ml-badge" fill="#ffffff">MODE: PERPETUAL</text>
+
+      <rect x="274" y="0" width="124" height="26" fill="#ffffff"/>
+      <text x="282" y="17" class="mono ml-badge" fill="#000000">SPEC: HARNESS</text>
+    </g>
+  </g>
+
+  <!-- Divider -->
+  <line x1="50" y1="108" x2="1550" y2="108" stroke="#222222" stroke-width="1.5"/>
+
+  <!-- ========================================================================= -->
+  <!-- LEFT COLUMN: THE 6 NESTED HIERARCHICAL TIERS                              -->
+  <!-- ========================================================================= -->
+
+  <!-- TIER 01: MASTER LOOP -->
+  <g transform="translate(50, 134)">
+    <rect width="820" height="88" fill="#111111" stroke="#ffffff" stroke-width="2"/>
+    <rect x="0" y="0" width="820" height="24" fill="#ffffff"/>
+    <text x="12" y="16" class="mono ml-head" fill="#000000">TIER 01 // MASTER LOOP HARNESS</text>
+    <text x="710" y="16" class="mono ml-badge" fill="#000000">[SCOPE: GLOBAL]</text>
+    
+    <text x="16" y="52" class="sans ml-title">MasterLoopHarness</text>
+    <text x="190" y="52" class="mono ml-code" fill="#ff3e00">should_continue()</text>
+    <text x="350" y="52" class="mono ml-code" fill="#888888">AGENT_LOOP_PERPETUAL=1</text>
+    <text x="16" y="74" class="sans ml-body">Orchestrates top-level daemon lifecycle, error recovery, graceful SIGINT, and loop restarts.</text>
+  </g>
+
+  <!-- Stepped Indent Line -->
+  <path d="M 80 222 L 80 240 L 90 240" class="wire-w"/>
+
+  <!-- TIER 02: MISSION LOOP -->
+  <g transform="translate(90, 236)">
+    <rect width="780" height="88" fill="#111111" stroke="#ffffff" stroke-width="1.5"/>
+    <rect x="0" y="0" width="780" height="24" fill="#222222"/>
+    <text x="12" y="16" class="mono ml-head" fill="#ffffff">TIER 02 // MISSION RUNNER</text>
+    <text x="670" y="16" class="mono ml-badge" fill="#00ff66">[MAX_CYCLES: N]</text>
+    
+    <text x="16" y="52" class="sans ml-title">MissionLoopSpec</text>
+    <text x="180" y="52" class="mono ml-code" fill="#00ff66">objective="Keep repo healthy"</text>
+    <text x="16" y="74" class="sans ml-body">High-level strategic mandate. Iterates multi-cycle missions until objective verification passes.</text>
+  </g>
+
+  <!-- Stepped Indent Line -->
+  <path d="M 120 324 L 120 342 L 130 342" class="wire-w"/>
+
+  <!-- TIER 03: GOAL LOOP -->
+  <g transform="translate(130, 338)">
+    <rect width="740" height="88" fill="#111111" stroke="#ffffff" stroke-width="1.5"/>
+    <rect x="0" y="0" width="740" height="24" fill="#222222"/>
+    <text x="12" y="16" class="mono ml-head" fill="#ffffff">TIER 03 // GOAL MILESTONES</text>
+    <text x="630" y="16" class="mono ml-badge" fill="#ffffff">[TARGET: VERIFY]</text>
+    
+    <text x="16" y="52" class="sans ml-title">GoalLoopSpec</text>
+    <text x="160" y="52" class="mono ml-code" fill="#ffaa00">name="verify", criteria=[...]</text>
+    <text x="16" y="74" class="sans ml-body">Decomposes mission into concrete milestones. Validates preconditions before dispatching agents.</text>
+  </g>
+
+  <!-- Stepped Indent Line -->
+  <path d="M 160 426 L 160 444 L 170 444" class="wire-w"/>
+
+  <!-- TIER 04: AGENT LOOP -->
+  <g transform="translate(170, 440)">
+    <rect width="700" height="88" fill="#111111" stroke="#ffffff" stroke-width="1.5"/>
+    <rect x="0" y="0" width="700" height="24" fill="#222222"/>
+    <text x="12" y="16" class="mono ml-head" fill="#ffffff">TIER 04 // AGENT CONTEXT</text>
+    <text x="590" y="16" class="mono ml-badge" fill="#00e5ff">[ROLE: MAINTAINER]</text>
+    
+    <text x="16" y="52" class="sans ml-title">AgentLoopSpec</text>
+    <text x="170" y="52" class="mono ml-code" fill="#00e5ff">CodingAgentHarness(model=...)</text>
+    <text x="16" y="74" class="sans ml-body">Binds model client, conversation memory, tool access control, and prompt persona instructions.</text>
+  </g>
+
+  <!-- Stepped Indent Line -->
+  <path d="M 200 528 L 200 546 L 210 546" class="wire-w"/>
+
+  <!-- TIER 05: WORKFLOW LOOP -->
+  <g transform="translate(210, 542)">
+    <rect width="660" height="88" fill="#111111" stroke="#ffffff" stroke-width="1.5"/>
+    <rect x="0" y="0" width="660" height="24" fill="#222222"/>
+    <text x="12" y="16" class="mono ml-head" fill="#ffffff">TIER 05 // WORKFLOW PIPELINE</text>
+    <text x="540" y="16" class="mono ml-badge" fill="#ffffff">[DETERMINISTIC]</text>
+    
+    <text x="16" y="52" class="sans ml-title">WorkflowLoopSpec</text>
+    <text x="195" y="52" class="mono ml-code" fill="#ffffff">tool_sequence=[{"tool": "shell"}]</text>
+    <text x="16" y="74" class="sans ml-body">Deterministic multi-step script execution for repeatable CI/CD, linting, and build validation.</text>
+  </g>
+
+  <!-- Stepped Indent Line -->
+  <path d="M 240 630 L 240 648 L 250 648" class="wire-o"/>
+
+  <!-- TIER 06: TOOL LOOP (EXECUTION CORE) -->
+  <g transform="translate(250, 644)">
+    <rect width="620" height="88" fill="#140a08" stroke="#ff3e00" stroke-width="2"/>
+    <rect x="0" y="0" width="620" height="24" fill="#ff3e00"/>
+    <text x="12" y="16" class="mono ml-head" fill="#ffffff">TIER 06 // ISOLATED TOOL EXECUTION</text>
+    <text x="490" y="16" class="mono ml-badge" fill="#000000">[STREAM: LIVE NDJSON]</text>
+    
+    <text x="16" y="52" class="sans ml-title" fill="#ffffff">ToolExecutor</text>
+    <text x="140" y="52" class="mono ml-code" fill="#ff7755">shell | read | edit | mcp | web</text>
+    <text x="16" y="74" class="sans ml-body" fill="#ddbbbb">Direct sandboxed execution yielding live stdout/stderr chunks through the streaming event bus.</text>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- RIGHT COLUMN: CONTROL SURFACES & TELEMETRY STREAM                         -->
+  <!-- ========================================================================= -->
+
+  <!-- CONTROL SURFACE 01: INK TUI -->
+  <g transform="translate(930, 134)">
+    <rect width="620" height="180" fill="#111111" stroke="#ffffff" stroke-width="2"/>
+    <rect x="0" y="0" width="620" height="28" fill="#ffffff"/>
+    <text x="12" y="19" class="mono ml-head" fill="#000000">SURFACE 01 // INTERACTIVE TERMINAL (INK TUI)</text>
+    <text x="500" y="19" class="mono ml-badge" fill="#000000">[REACT / INK]</text>
+
+    <text x="16" y="58" class="sans ml-title">Terminal Mission Control</text>
+    <text x="16" y="80" class="mono ml-code" fill="#00ff66">CMD: npm run tui  •  PREFIX: /mission &lt;objective&gt;</text>
+    
+    <line x1="16" y1="94" x2="604" y2="94" stroke="#222222" stroke-width="1"/>
+    <text x="16" y="116" class="sans ml-body">Renders a high-density, real-time dashboard displaying active goal progress,</text>
+    <text x="16" y="136" class="sans ml-body">nested agent workflows, tool streaming output, and interactive permission prompts.</text>
+    <text x="16" y="156" class="mono ml-badge" fill="#888888">ENV: AGENT_LOOP_MISSION_CYCLES=N | AGENT_LOOP_PERPETUAL=1</text>
+  </g>
+
+  <!-- Connecting Bus -->
+  <path d="M 1240 314 L 1240 344" class="wire-w"/>
+
+  <!-- CONTROL SURFACE 02: HEADLESS NDJSON CHILD PROCESS BRIDGE -->
+  <g transform="translate(930, 344)">
+    <rect width="620" height="180" fill="#111111" stroke="#ffffff" stroke-width="1.5"/>
+    <rect x="0" y="0" width="620" height="28" fill="#222222"/>
+    <text x="12" y="19" class="mono ml-head" fill="#ffffff">SURFACE 02 // HEADLESS CONTROLLER BRIDGE</text>
+    <text x="500" y="19" class="mono ml-badge" fill="#ffffff">[STDIO / NDJSON]</text>
+
+    <text x="16" y="58" class="sans ml-title">Child Process Bridge</text>
+    <text x="16" y="80" class="mono ml-code" fill="#ffaa00">scripts/run-as-child.py  •  INPUT: JSON stdin  •  OUTPUT: NDJSON</text>
+    
+    <line x1="16" y1="94" x2="604" y2="94" stroke="#222222" stroke-width="1"/>
+    <text x="16" y="116" class="sans ml-body">Embeds agent-loop inside external supervisors, daemons, or parent IDE processes.</text>
+    <text x="16" y="136" class="sans ml-body">Streams machine-parsable lifecycle event frames line-by-line without buffering.</text>
+    <text x="16" y="156" class="mono ml-badge" fill="#ffaa00">PAYLOAD: {"mode": "mission", "task": "...", "tool_sequence": [...]}</text>
+  </g>
+
+  <!-- Connecting Bus -->
+  <path d="M 1240 524 L 1240 554" class="wire-w"/>
+
+  <!-- CONTROL SURFACE 03: TELEGRAM CODEX CONTROLLER -->
+  <g transform="translate(930, 554)">
+    <rect width="620" height="178" fill="#111111" stroke="#ffffff" stroke-width="1.5"/>
+    <rect x="0" y="0" width="620" height="28" fill="#222222"/>
+    <text x="12" y="19" class="mono ml-head" fill="#ffffff">SURFACE 03 // REMOTE PAIRED CONTROLLER</text>
+    <text x="500" y="19" class="mono ml-badge" fill="#00e5ff">[MOBILE BOT]</text>
+
+    <text x="16" y="58" class="sans ml-title">Telegram Codex Controller</text>
+    <text x="16" y="80" class="mono ml-code" fill="#00e5ff">examples/telegram_agent.py  •  ROUTER: TelegramCodexAgent</text>
+    
+    <line x1="16" y1="94" x2="604" y2="94" stroke="#222222" stroke-width="1"/>
+    <text x="16" y="116" class="sans ml-body">Persistent paired chat interface supporting session switching, model selection,</text>
+    <text x="16" y="136" class="sans ml-body">workspace directory changes, permission escalation, and /plan slash commands.</text>
+    <text x="16" y="156" class="mono ml-badge" fill="#00e5ff">SECURITY: Cryptographic 6-digit pairing code verification</text>
+  </g>
+
+  <!-- Interconnect Line from Tool Loop back to Controller Surfaces -->
+  <path d="M 870 688 L 900 688 L 900 224 L 930 224" class="wire-g"/>
+
+  <!-- Footer -->
+  <g transform="translate(50, 752)">
+    <text x="0" y="0" class="mono ml-sub">AGENT-LOOP PROTOCOL // RECURSIVE ORCHESTRATION ARCHITECTURE • FIG: 03-MASTER-LOOP</text>
+    <text x="1490" y="0" text-anchor="end" class="mono ml-sub">SPEC: REV-1.4</text>
+  </g>
+</svg>

@@ -1,0 +1,252 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 680" width="1600" height="680" role="img" aria-labelledby="gateTitle gateDesc">
+  <title id="gateTitle">agent-loop brutalist approval gate schematic</title>
+  <desc id="gateDesc">Technical architectural schematic showing the three-tier approval gate security model of agent-loop.</desc>
+  <defs>
+    <pattern id="brutalistGridGate" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#161616" stroke-width="1"/>
+      <path d="M 0 0 L 4 0 M 0 0 L 0 4 M 40 40 L 36 40 M 40 40 L 40 36" fill="none" stroke="#2a2a2a" stroke-width="1"/>
+      <circle cx="40" cy="40" r="1" fill="#333333"/>
+    </pattern>
+
+    <marker id="gmWhite" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <polygon points="0,1 6,4 0,7" fill="#ffffff"/>
+    </marker>
+    <marker id="gmOrange" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <polygon points="0,1 6,4 0,7" fill="#ff3e00"/>
+    </marker>
+    <marker id="gmGreen" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <polygon points="0,1 6,4 0,7" fill="#00ff66"/>
+    </marker>
+    <marker id="gmRed" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <polygon points="0,1 6,4 0,7" fill="#ff2244"/>
+    </marker>
+
+    <style>
+      .mono { font-family: "JetBrains Mono", "SF Mono", "Roboto Mono", Menlo, Consolas, monospace; }
+      .sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; }
+      .gt-hero { font-weight: 900; font-size: 24px; fill: #ffffff; letter-spacing: 2px; }
+      .gt-sub { font-weight: 600; font-size: 11px; fill: #777777; letter-spacing: 1.5px; }
+      .gt-head { font-weight: 800; font-size: 12px; letter-spacing: 1px; }
+      .gt-title { font-weight: 800; font-size: 17px; fill: #ffffff; letter-spacing: -0.3px; }
+      .gt-desc { font-weight: 500; font-size: 12px; fill: #888888; line-height: 1.4; }
+      .gt-code { font-weight: 700; font-size: 11px; fill: #dddddd; }
+      .gt-badge { font-weight: 800; font-size: 10px; letter-spacing: 1.2px; }
+      .g-wire-w { stroke: #ffffff; stroke-width: 2; fill: none; marker-end: url(#gmWhite); }
+      .g-wire-o { stroke: #ff3e00; stroke-width: 2; fill: none; marker-end: url(#gmOrange); }
+      .g-wire-g { stroke: #00ff66; stroke-width: 2; fill: none; marker-end: url(#gmGreen); }
+      .g-wire-r { stroke: #ff2244; stroke-width: 2; fill: none; marker-end: url(#gmRed); }
+    </style>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1600" height="680" fill="#090909"/>
+  <rect width="1600" height="680" fill="url(#brutalistGridGate)"/>
+
+  <!-- Outer Frame -->
+  <rect x="20" y="20" width="1560" height="640" fill="none" stroke="#222222" stroke-width="2"/>
+  <rect x="24" y="24" width="1552" height="632" fill="none" stroke="#161616" stroke-width="1"/>
+
+  <!-- Corner Crop Marks -->
+  <g stroke="#ffffff" stroke-width="1.5" opacity="0.8">
+    <path d="M 20 40 L 40 40 M 40 20 L 40 40"/>
+    <path d="M 1580 40 L 1560 40 M 1560 20 L 1560 40"/>
+    <path d="M 20 640 L 40 640 M 40 660 L 40 640"/>
+    <path d="M 1580 640 L 1560 640 M 1560 660 L 1560 640"/>
+  </g>
+
+  <!-- Header -->
+  <g transform="translate(50, 48)">
+    <rect x="0" y="0" width="34" height="34" fill="#ff3e00"/>
+    <rect x="9" y="9" width="16" height="16" fill="#090909"/>
+    <rect x="14" y="14" width="6" height="6" fill="#ffffff"/>
+
+    <text x="48" y="24" class="sans gt-hero">AGENT-LOOP</text>
+    <text x="248" y="24" class="mono gt-hero" fill="#ff3e00" font-weight="400">//</text>
+    <text x="280" y="24" class="mono" font-size="15" font-weight="700" fill="#aaaaaa" letter-spacing="1.5px">SPEC: THREE-TIER APPROVAL GATING SYSTEM</text>
+    <text x="50" y="42" class="mono gt-sub">RISK CLASSIFICATION • HUMAN-IN-THE-LOOP VERIFICATION • DETERMINISTIC ACCESS ENFORCEMENT</text>
+
+    <!-- Header Badges -->
+    <g transform="translate(1090, 4)">
+      <rect x="0" y="0" width="120" height="26" fill="#141414" stroke="#333333" stroke-width="1"/>
+      <rect x="0" y="0" width="6" height="26" fill="#00ff66"/>
+      <text x="14" y="17" class="mono gt-badge" fill="#ffffff">GATE: ACTIVE</text>
+
+      <rect x="132" y="0" width="124" height="26" fill="#141414" stroke="#333333" stroke-width="1"/>
+      <rect x="132" y="0" width="6" height="26" fill="#ff3e00"/>
+      <text x="146" y="17" class="mono gt-badge" fill="#ffffff">STRICT: ARMED</text>
+
+      <rect x="268" y="0" width="130" height="26" fill="#ffffff"/>
+      <text x="276" y="17" class="mono gt-badge" fill="#000000">SPEC: GATE-V2</text>
+    </g>
+  </g>
+
+  <!-- Divider -->
+  <line x1="50" y1="108" x2="1550" y2="108" stroke="#222222" stroke-width="1.5"/>
+
+  <!-- ========================================================================= -->
+  <!-- STEP 00: INCOMING TOOL INTENT (LEFT)                                      -->
+  <!-- ========================================================================= -->
+  <g transform="translate(50, 134)">
+    <rect width="280" height="370" fill="#111111" stroke="#ffffff" stroke-width="2"/>
+    <rect x="0" y="0" width="280" height="30" fill="#ffffff"/>
+    <text x="12" y="20" class="mono gt-head" fill="#000000">INTENT // DISPATCH INTAKE</text>
+
+    <text x="16" y="60" class="sans gt-title">ToolCall Request</text>
+    <text x="16" y="82" class="mono gt-code" fill="#888888">INPUT: Raw Tool Execution</text>
+    
+    <line x1="16" y1="96" x2="264" y2="96" stroke="#222222" stroke-width="1"/>
+
+    <!-- Schema Card -->
+    <g transform="translate(16, 110)">
+      <rect width="248" height="150" fill="#090909" stroke="#2a2a2a" stroke-width="1"/>
+      <rect x="0" y="0" width="248" height="22" fill="#161616"/>
+      <text x="10" y="15" class="mono gt-badge" fill="#888888">EVALUATION PAYLOAD</text>
+
+      <text x="10" y="44" class="mono gt-code" fill="#aaaaaa">tool: <tspan fill="#ffffff">"shell"</tspan></text>
+      <text x="10" y="66" class="mono gt-code" fill="#aaaaaa">args: <tspan fill="#ff3e00">{"cmd": "rm -rf /"}</tspan></text>
+      <text x="10" y="88" class="mono gt-code" fill="#aaaaaa">path: <tspan fill="#ffffff">"/workspace"</tspan></text>
+      <text x="10" y="110" class="mono gt-code" fill="#aaaaaa">call_id: <tspan fill="#00ff66">"call_98x1"</tspan></text>
+      <text x="10" y="132" class="mono gt-code" fill="#aaaaaa">executor.needs_approval</text>
+    </g>
+
+    <text x="16" y="284" class="sans gt-desc">Interception layer checks static risk</text>
+    <text x="16" y="304" class="sans gt-desc">table and custom approver hook</text>
+    <text x="16" y="324" class="sans gt-desc">before child process is spawned.</text>
+
+    <rect x="16" y="336" width="248" height="20" fill="#181818"/>
+    <text x="24" y="350" class="mono gt-badge" fill="#00ff66">AUTO_APPROVE = FALSE</text>
+  </g>
+
+  <!-- Flow Traces from Input to 3 Tiers -->
+  <path d="M 330 200 L 390 200" class="g-wire-g"/>
+  <path d="M 330 320 L 390 320" class="g-wire-o"/>
+  <path d="M 330 440 L 390 440" class="g-wire-w"/>
+
+  <!-- ========================================================================= -->
+  <!-- 3 POLICY TIERS (CENTER COLUMNS)                                           -->
+  <!-- ========================================================================= -->
+
+  <!-- TIER 01: AUTO (PERMISSIVE PASS-THROUGH) -->
+  <g transform="translate(390, 134)">
+    <rect width="660" height="110" fill="#0c160f" stroke="#00ff66" stroke-width="1.5"/>
+    <rect x="0" y="0" width="660" height="26" fill="#00ff66"/>
+    <text x="12" y="17" class="mono gt-head" fill="#000000">TIER 01 // AUTO-PERMISSIVE (READ-ONLY OPERATIONS)</text>
+    <text x="560" y="17" class="mono gt-badge" fill="#000000">[RISK: ZERO]</text>
+
+    <text x="16" y="52" class="sans gt-title" fill="#ffffff">Deterministic Fast-Path</text>
+    <text x="220" y="52" class="mono gt-code" fill="#00ff66">tools: read, grep, glob, web_search</text>
+    <text x="16" y="74" class="sans gt-desc" fill="#99ccaa">Non-mutating tools bypass approval barrier instantly. Zero roundtrip latency penalty.</text>
+    <text x="16" y="94" class="mono gt-badge" fill="#00ff66">DISPATCH: IMMEDIATE &gt; ToolExecutor.run()</text>
+  </g>
+
+  <!-- Output trace from Tier 01 directly to sandbox -->
+  <path d="M 1050 189 L 1150 189" class="g-wire-g"/>
+
+  <!-- TIER 02: PRE_CHECK (HUMAN CONFIRMATION GATE - CRITICAL) -->
+  <g transform="translate(390, 264)">
+    <rect width="660" height="130" fill="#1a0a07" stroke="#ff3e00" stroke-width="2.5"/>
+    <rect x="0" y="0" width="660" height="28" fill="#ff3e00"/>
+    <text x="12" y="19" class="mono gt-head" fill="#ffffff">TIER 02 // PRE_CHECK (MUTATION &amp; EXECUTION GATE)</text>
+    <text x="540" y="19" class="mono gt-badge" fill="#000000">[CRITICAL RISK]</text>
+
+    <text x="16" y="54" class="sans gt-title" fill="#ffffff">Human-in-the-Loop Approval Barrier</text>
+    <text x="330" y="54" class="mono gt-code" fill="#ff7755">shell, edit, delete, external MCP</text>
+    <text x="16" y="76" class="sans gt-desc" fill="#ffbbbb">Execution pauses. ApprovalGate evaluates command strings and targets against policy rules.</text>
+    <text x="16" y="94" class="sans gt-desc" fill="#ffbbbb">Prompts user via CLI, Ink TUI popup, or paired Telegram /confirm code before execution.</text>
+
+    <!-- Forked Action Buttons -->
+    <rect x="16" y="102" width="130" height="20" fill="#00ff66"/>
+    <text x="24" y="116" class="mono gt-badge" fill="#000000">[1] ALLOW &gt; DISPATCH</text>
+
+    <rect x="156" y="102" width="130" height="20" fill="#ff2244"/>
+    <text x="164" y="116" class="mono gt-badge" fill="#ffffff">[2] DENY &gt; HALT</text>
+  </g>
+
+  <!-- Traces from Tier 02: ALLOW to Sandbox, DENY to Rejection -->
+  <path d="M 1050 310 L 1150 310" class="g-wire-o"/>
+  <path d="M 1050 350 L 1150 350" class="g-wire-r"/>
+
+  <!-- TIER 03: POST_CHECK (POST-EXECUTION AUDIT) -->
+  <g transform="translate(390, 414)">
+    <rect width="660" height="90" fill="#111111" stroke="#ffffff" stroke-width="1.5"/>
+    <rect x="0" y="0" width="660" height="24" fill="#222222"/>
+    <text x="12" y="16" class="mono gt-head" fill="#ffffff">TIER 03 // POST_CHECK (EXECUTION AUDIT &amp; ANOMALY DETECTION)</text>
+    <text x="550" y="16" class="mono gt-badge" fill="#ffffff">[POST-ACTION]</text>
+
+    <text x="16" y="50" class="sans gt-title">Integrity Verification</text>
+    <text x="180" y="50" class="mono gt-code" fill="#aaaaaa">EXIT_CODE != 0 | UNTRACKED_DIFF</text>
+    <text x="16" y="72" class="sans gt-desc">Monitors subprocess exit status, diff size thresholds, and enforces rollback if execution violated invariants.</text>
+  </g>
+
+  <!-- Output trace from Tier 03 to Final Result -->
+  <path d="M 1050 459 L 1150 459" class="g-wire-w"/>
+
+  <!-- ========================================================================= -->
+  <!-- RESOLUTION TARGETS (RIGHT COLUMN)                                         -->
+  <!-- ========================================================================= -->
+  <g transform="translate(1150, 134)">
+    <rect width="400" height="370" fill="#111111" stroke="#ffffff" stroke-width="2"/>
+    <rect x="0" y="0" width="400" height="30" fill="#ffffff"/>
+    <text x="12" y="20" class="mono gt-head" fill="#000000">RESOLUTION // ENFORCEMENT ENGINE</text>
+
+    <!-- Outcome A: Verified Dispatch -->
+    <g transform="translate(16, 44)">
+      <rect width="368" height="90" fill="#0e1810" stroke="#00ff66" stroke-width="1.5"/>
+      <rect x="0" y="0" width="368" height="20" fill="#00ff66"/>
+      <text x="10" y="14" class="mono gt-badge" fill="#000000">OUTCOME A // AUTHORIZED DISPATCH</text>
+      <text x="12" y="44" class="sans gt-title" fill="#ffffff">Launch Tool Executor</text>
+      <text x="12" y="66" class="sans gt-desc" fill="#99ccaa">Command dispatches to PTY/stdio sandbox.</text>
+      <text x="12" y="82" class="mono gt-badge" fill="#00ff66">EMIT: ToolCallStartedEvent</text>
+    </g>
+
+    <!-- Outcome B: Denied / Blocked -->
+    <g transform="translate(16, 148)">
+      <rect width="368" height="90" fill="#1a0808" stroke="#ff2244" stroke-width="1.5"/>
+      <rect x="0" y="0" width="368" height="20" fill="#ff2244"/>
+      <text x="10" y="14" class="mono gt-badge" fill="#ffffff">OUTCOME B // DENIED / BLOCKED</text>
+      <text x="12" y="44" class="sans gt-title" fill="#ffffff">Abort Execution</text>
+      <text x="12" y="66" class="sans gt-desc" fill="#ffaaaa">Process never spawns. Returns refusal to LLM.</text>
+      <text x="12" y="82" class="mono gt-badge" fill="#ff2244">STATUS: "approval_denied"</text>
+    </g>
+
+    <!-- Outcome C: Audit Trail -->
+    <g transform="translate(16, 252)">
+      <rect width="368" height="96" fill="#141414" stroke="#444444" stroke-width="1"/>
+      <rect x="0" y="0" width="368" height="20" fill="#222222"/>
+      <text x="10" y="14" class="mono gt-badge" fill="#888888">OUTCOME C // TELEMETRY AUDIT TRAIL</text>
+      <text x="12" y="44" class="sans gt-title" fill="#ffffff">Immutable Log Ledger</text>
+      <text x="12" y="66" class="sans gt-desc">Persisted to conversation history and telemetry bus.</text>
+      <text x="12" y="84" class="mono gt-code" fill="#888888">audit.log • timestamped cryptographic record</text>
+    </g>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- BOTTOM CODE USAGE PANEL                                                   -->
+  <!-- ========================================================================= -->
+  <g transform="translate(50, 524)">
+    <rect width="1500" height="90" fill="#111111" stroke="#333333" stroke-width="1.5"/>
+    <rect x="0" y="0" width="1500" height="24" fill="#1a1a1a"/>
+    <text x="14" y="16" class="mono gt-head" fill="#888888">PYTHON USAGE // DETERMINISTIC APPROVAL INTEGRATION</text>
+    
+    <g transform="translate(20, 38)">
+      <text x="0" y="14" class="mono gt-code" fill="#ff3e00">GATE INSTANTIATION:</text>
+      <text x="180" y="14" class="mono gt-code" fill="#ffffff">gate = ApprovalGate()</text>
+      <text x="380" y="14" class="mono gt-code" fill="#888888"># Evaluates risk per tool name and parameter dictionary</text>
+
+      <text x="0" y="34" class="mono gt-code" fill="#00ff66">EVALUATION CHECK:</text>
+      <text x="180" y="34" class="mono gt-code" fill="#ffffff">result = gate.evaluate("shell", {"command": "rm -rf /"})</text>
+      <text x="690" y="34" class="mono gt-code" fill="#888888"># Returns GateResult(status="requires_approval")</text>
+    </g>
+
+    <g transform="translate(1350, 36)">
+      <rect x="0" y="0" width="130" height="28" fill="#000000" stroke="#444444" stroke-width="1"/>
+      <text x="12" y="18" class="mono gt-badge" fill="#ffffff">POLICY: RIGID</text>
+    </g>
+  </g>
+
+  <!-- Footer -->
+  <g transform="translate(50, 646)">
+    <text x="0" y="0" class="mono gt-sub">AGENT-LOOP PROTOCOL // APPROVAL GATE SPECIFICATION • FIG: 04-SECURITY-GATE</text>
+    <text x="1490" y="0" text-anchor="end" class="mono gt-sub">SPEC: REV-2.0</text>
+  </g>
+</svg>

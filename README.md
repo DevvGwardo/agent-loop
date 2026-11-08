@@ -76,6 +76,22 @@ for event in agent.run("list the current directory"):
 
 ---
 
+## Terminal & Mission Control Interface
+
+`agent-loop` includes an interactive, high-density terminal interface built on React and Ink. It streams real-time token throughput, subprocess stdout/stderr buffer deltas, and multi-tier goal progress directly in your console:
+
+<p align="center">
+  <img src="docs/assets/agent-loop-terminal.png" alt="agent-loop Terminal & Mission Control Interface" width="100%" />
+</p>
+
+Launch the interactive interface with:
+
+```bash
+npm run tui
+```
+
+---
+
 ## Tool Executors
 
 | Tool | Name | Args | Streaming |
@@ -145,7 +161,11 @@ python examples/llm_agent.py
 
 ## MCP Snapshot Cache
 
-Caches MCP server tool definitions with **generation tracking** — only fetches from servers when their definitions change.
+Caches MCP server tool definitions with **generation tracking** — only fetches from servers when their definitions change, avoiding per-turn schema round-trips.
+
+<p align="center">
+  <img src="docs/assets/agent-loop-mcp-cache.svg" alt="agent-loop MCP snapshot cache schematic" width="100%" />
+</p>
 
 ```python
 from agent_loop.mcp import McpSnapshotCache
@@ -166,6 +186,10 @@ assert snapshot.checksum == cache.get_checksum("sqlite")
 ## Approval Gates
 
 Three-tier security model (`AUTO` / `PRE_CHECK` / `POST_CHECK`) that gates tool calls based on risk classification:
+
+<p align="center">
+  <img src="docs/assets/agent-loop-approval-gate.svg" alt="agent-loop approval gate security schematic" width="100%" />
+</p>
 
 ```python
 from agent_loop.approval import ApprovalGate
@@ -255,7 +279,11 @@ echo '{
 
 ## Master Loop Harness
 
-`MasterLoopHarness` adds the long-running orchestration layer:
+`MasterLoopHarness` adds the long-running orchestration layer across an orthogonal 6-tier execution stack:
+
+<p align="center">
+  <img src="docs/assets/agent-loop-master-loop.svg" alt="agent-loop master loop hierarchy schematic" width="100%" />
+</p>
 
 ```text
 ┌────────────────────────────────────────────────────────┐
