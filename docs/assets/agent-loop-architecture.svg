@@ -1,280 +1,378 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 820" width="1600" height="820" role="img" aria-labelledby="title desc">
-  <title id="title">agent-loop architecture diagram</title>
-  <desc id="desc">Streaming AI coding agent protocol architecture with approval gating, execution lifecycle, and contextual cache systems.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 920" width="1600" height="920" role="img" aria-labelledby="archTitle archDesc">
+  <title id="archTitle">agent-loop brutalist architecture schematic</title>
+  <desc id="archDesc">High-precision brutalist minimalist architecture schematic for the agent-loop streaming protocol.</desc>
   <defs>
-    <!-- Background Gradient -->
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#040911"/>
-      <stop offset="50%" stop-color="#071220"/>
-      <stop offset="100%" stop-color="#030810"/>
-    </linearGradient>
-
-    <!-- Node Glow & Card Gradients -->
-    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#00f0ff"/>
-      <stop offset="100%" stop-color="#0072ff"/>
-    </linearGradient>
-    <linearGradient id="amberGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#ffd166"/>
-      <stop offset="100%" stop-color="#ff8c00"/>
-    </linearGradient>
-    <linearGradient id="emeraldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#00f5d4"/>
-      <stop offset="100%" stop-color="#019875"/>
-    </linearGradient>
-    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="rgba(13, 27, 46, 0.85)"/>
-      <stop offset="100%" stop-color="rgba(8, 17, 30, 0.95)"/>
-    </linearGradient>
-    <linearGradient id="cardAmberGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="rgba(38, 26, 12, 0.85)"/>
-      <stop offset="100%" stop-color="rgba(20, 14, 6, 0.95)"/>
-    </linearGradient>
-
-    <!-- Grid Pattern -->
-    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(0, 240, 255, 0.04)" stroke-width="1"/>
-      <circle cx="40" cy="40" r="1" fill="rgba(0, 240, 255, 0.12)"/>
+    <!-- Technical Drafting Grid -->
+    <pattern id="brutalistGrid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#161616" stroke-width="1"/>
+      <path d="M 0 0 L 4 0 M 0 0 L 0 4 M 40 40 L 36 40 M 40 40 L 40 36" fill="none" stroke="#2a2a2a" stroke-width="1"/>
+      <circle cx="40" cy="40" r="1" fill="#333333"/>
     </pattern>
 
-    <!-- Glow Filters -->
-    <filter id="neonGlow" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="8" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-    <filter id="ambientGlow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="60" result="blur"/>
-    </filter>
-
     <!-- Markers -->
-    <marker id="arrowCyan" markerWidth="10" markerHeight="10" refX="7" refY="5" orient="auto">
-      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#00f0ff"/>
+    <marker id="mWhite" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <polygon points="0,1 6,4 0,7" fill="#ffffff"/>
     </marker>
-    <marker id="arrowAmber" markerWidth="10" markerHeight="10" refX="7" refY="5" orient="auto">
-      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#ffd166"/>
+    <marker id="mOrange" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <polygon points="0,1 6,4 0,7" fill="#ff3e00"/>
     </marker>
-    <marker id="arrowEmerald" markerWidth="10" markerHeight="10" refX="7" refY="5" orient="auto">
-      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#00f5d4"/>
+    <marker id="mGreen" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <polygon points="0,1 6,4 0,7" fill="#00ff66"/>
+    </marker>
+    <marker id="mGray" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <polygon points="0,1 6,4 0,7" fill="#666666"/>
     </marker>
 
     <style>
-      .brand-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; font-size: 28px; font-weight: 800; fill: #ffffff; letter-spacing: -0.5px; }
-      .brand-sub { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; font-size: 15px; font-weight: 400; fill: #799bbb; }
-      .node-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; font-size: 20px; font-weight: 700; fill: #f0faff; }
-      .node-amber-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; font-size: 20px; font-weight: 700; fill: #ffe8b3; }
-      .node-desc { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; font-size: 13px; font-weight: 500; fill: #8eaec9; }
-      .node-tag { font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
-      .connector { stroke: #00f0ff; stroke-width: 2.5; fill: none; marker-end: url(#arrowCyan); }
-      .connector-amber { stroke: #ffd166; stroke-width: 2.5; fill: none; marker-end: url(#arrowAmber); }
-      .connector-emerald { stroke: #00f5d4; stroke-width: 2.5; fill: none; marker-end: url(#arrowEmerald); }
-      .dash-line { stroke-dasharray: 6 6; stroke-width: 1.5; stroke: rgba(0, 240, 255, 0.4); fill: none; }
+      .mono { font-family: "JetBrains Mono", "SF Mono", "Roboto Mono", Menlo, Consolas, monospace; }
+      .sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; }
+      .t-hero { font-weight: 900; font-size: 26px; fill: #ffffff; letter-spacing: 2px; }
+      .t-sub { font-weight: 600; font-size: 11px; fill: #777777; letter-spacing: 1.5px; }
+      .t-node-head { font-weight: 800; font-size: 13px; letter-spacing: 1px; }
+      .t-node-title { font-weight: 800; font-size: 16px; fill: #ffffff; letter-spacing: -0.3px; }
+      .t-node-body { font-weight: 500; font-size: 12px; fill: #888888; line-height: 1.4; }
+      .t-node-code { font-weight: 700; font-size: 11px; fill: #cccccc; }
+      .t-badge { font-weight: 800; font-size: 10px; letter-spacing: 1.2px; }
+      .wire-w { stroke: #ffffff; stroke-width: 2; fill: none; marker-end: url(#mWhite); }
+      .wire-o { stroke: #ff3e00; stroke-width: 2; fill: none; marker-end: url(#mOrange); }
+      .wire-g { stroke: #00ff66; stroke-width: 2; fill: none; marker-end: url(#mGreen); }
+      .wire-dash { stroke: #444444; stroke-width: 1.5; stroke-dasharray: 4 4; fill: none; marker-end: url(#mGray); }
     </style>
   </defs>
 
-  <!-- Deep Canvas Background -->
-  <rect width="1600" height="820" rx="24" fill="url(#bgGrad)"/>
-  <rect width="1600" height="820" rx="24" fill="url(#grid)"/>
+  <!-- Canvas Base -->
+  <rect width="1600" height="920" fill="#090909"/>
+  <rect width="1600" height="920" fill="url(#brutalistGrid)"/>
 
-  <!-- Subtle Cybernetic Glow Orbs -->
-  <circle cx="200" cy="180" r="160" fill="#0072ff" opacity="0.12" filter="url(#ambientGlow)"/>
-  <circle cx="1100" cy="220" r="220" fill="#00f0ff" opacity="0.08" filter="url(#ambientGlow)"/>
-  <circle cx="750" cy="540" r="180" fill="#00d2d3" opacity="0.07" filter="url(#ambientGlow)"/>
-  <circle cx="950" cy="300" r="130" fill="#ff9f43" opacity="0.09" filter="url(#ambientGlow)"/>
+  <!-- Outer Technical Drafting Frame -->
+  <rect x="20" y="20" width="1560" height="880" fill="none" stroke="#222222" stroke-width="2"/>
+  <rect x="24" y="24" width="1552" height="872" fill="none" stroke="#161616" stroke-width="1"/>
 
-  <!-- Outer Blueprint Border -->
-  <rect x="24" y="24" width="1552" height="772" rx="20" fill="none" stroke="rgba(0, 240, 255, 0.15)" stroke-width="1.5"/>
-
-  <!-- ==================== HEADER ==================== -->
-  <g transform="translate(60, 52)">
-    <!-- Hermes Brand Logo Mark (Infinity Wings Emblem) -->
-    <g transform="translate(0, 4) scale(0.75)" filter="url(#neonGlow)">
-      <!-- Stylized Wings -->
-      <path d="M 0 18 C 12 6, 28 2, 42 10 C 32 16, 26 24, 20 32 Z" fill="#00f0ff" opacity="0.9"/>
-      <path d="M 8 28 C 18 18, 32 14, 46 22 C 38 27, 32 34, 28 40 Z" fill="#00c8ff" opacity="0.7"/>
-      <!-- Infinity Loop Core -->
-      <path d="M 32 26 C 45 12, 65 12, 78 26 C 91 40, 111 40, 124 26 C 137 12, 157 12, 170 26 C 183 40, 163 54, 150 40 C 137 26, 117 26, 104 40 C 91 54, 71 54, 58 40 C 45 26, 25 26, 12 40 Z" 
-            fill="none" stroke="url(#cyanGrad)" stroke-width="6" stroke-linecap="round"/>
-      <!-- Algorithmic Nodes -->
-      <circle cx="170" cy="26" r="4.5" fill="#ffffff"/>
-      <circle cx="32" cy="26" r="4.5" fill="#00f0ff"/>
-    </g>
-
-    <!-- Header Text -->
-    <text x="160" y="32" class="brand-title">AGENT-LOOP <tspan fill="#00f0ff" font-weight="300">//</tspan> ARCHITECTURE</text>
-    <text x="160" y="58" class="brand-sub">Streaming AI coding agent protocol with approval gating, live incremental feedback, and cached tool state.</text>
-
-    <!-- Protocol Badges -->
-    <g transform="translate(1160, 12)">
-      <rect x="0" y="0" width="108" height="28" rx="14" fill="rgba(0, 240, 255, 0.08)" stroke="rgba(0, 240, 255, 0.4)" stroke-width="1"/>
-      <text x="54" y="18" text-anchor="middle" class="node-tag" fill="#00f0ff">PROTOCOL v1</text>
-      <rect x="118" y="0" width="128" height="28" rx="14" fill="rgba(0, 245, 212, 0.08)" stroke="rgba(0, 245, 212, 0.4)" stroke-width="1"/>
-      <text x="182" y="18" text-anchor="middle" class="node-tag" fill="#00f5d4">STREAMING</text>
-    </g>
+  <!-- Corner Crop / Registration Marks -->
+  <g stroke="#ffffff" stroke-width="1.5" opacity="0.8">
+    <path d="M 20 40 L 40 40 M 40 20 L 40 40"/>
+    <path d="M 1580 40 L 1560 40 M 1560 20 L 1560 40"/>
+    <path d="M 20 880 L 40 880 M 40 900 L 40 880"/>
+    <path d="M 1580 880 L 1560 880 M 1560 900 L 1560 880"/>
   </g>
 
-  <!-- ==================== TOP ROW: INTAKE, PLANNING & GATE ==================== -->
-  
-  <!-- 1. LLM INTAKE -->
-  <g transform="translate(60, 150)">
-    <rect width="210" height="135" rx="16" fill="url(#cardGrad)" stroke="rgba(0, 240, 255, 0.4)" stroke-width="1.5"/>
-    <rect x="1" y="1" width="208" height="4" rx="2" fill="url(#cyanGrad)"/>
-    <text x="22" y="36" class="node-tag" fill="#00f0ff">STAGE 01</text>
-    <text x="22" y="66" class="node-title">LLM Agent</text>
-    <text x="22" y="94" class="node-desc">Receives user intent &amp;</text>
-    <text x="22" y="114" class="node-desc">system prompt instructions</text>
+  <!-- Technical Calibration Ticks -->
+  <g stroke="#333333" stroke-width="1">
+    <line x1="400" y1="20" x2="400" y2="28"/>
+    <line x1="800" y1="20" x2="800" y2="28"/>
+    <line x1="1200" y1="20" x2="1200" y2="28"/>
+    <line x1="400" y1="892" x2="400" y2="900"/>
+    <line x1="800" y1="892" x2="800" y2="900"/>
+    <line x1="1200" y1="892" x2="1200" y2="900"/>
   </g>
 
-  <!-- Connector 1 -> 2 -->
-  <path d="M 270 217 L 338 217" class="connector"/>
+  <!-- ========================================================================= -->
+  <!-- HEADER BLOCK                                                              -->
+  <!-- ========================================================================= -->
+  <g transform="translate(50, 48)">
+    <!-- Brutalist Square Mark -->
+    <rect x="0" y="0" width="38" height="38" fill="#ffffff"/>
+    <rect x="10" y="10" width="18" height="18" fill="#090909"/>
+    <rect x="15" y="15" width="8" height="8" fill="#ff3e00"/>
 
-  <!-- 2. PLAN / REASONING -->
-  <g transform="translate(340, 150)">
-    <rect width="210" height="135" rx="16" fill="url(#cardGrad)" stroke="rgba(0, 240, 255, 0.4)" stroke-width="1.5"/>
-    <rect x="1" y="1" width="208" height="4" rx="2" fill="url(#cyanGrad)"/>
-    <text x="22" y="36" class="node-tag" fill="#00f0ff">STAGE 02</text>
-    <text x="22" y="66" class="node-title">Plan &amp; Intent</text>
-    <text x="22" y="94" class="node-desc">Synthesizes steps,</text>
-    <text x="22" y="114" class="node-desc">constructs tool payload</text>
-  </g>
+    <text x="52" y="26" class="sans t-hero">AGENT-LOOP</text>
+    <text x="264" y="26" class="mono t-hero" fill="#ff3e00" font-weight="400">//</text>
+    <text x="296" y="26" class="mono" font-size="16" font-weight="700" fill="#aaaaaa" letter-spacing="1.5px">SPEC: PROTOCOL ARCHITECTURE</text>
+    <text x="54" y="44" class="mono t-sub">RECURSIVE AI CODING PROTOCOL • STREAMING TELEMETRY BUS • VERIFIED GATEWAYS</text>
 
-  <!-- Connector 2 -> 3 -->
-  <path d="M 550 217 L 618 217" class="connector"/>
+    <!-- Status Badges -->
+    <g transform="translate(1080, 4)">
+      <!-- Badge 1 -->
+      <rect x="0" y="0" width="120" height="26" fill="#141414" stroke="#333333" stroke-width="1"/>
+      <rect x="0" y="0" width="6" height="26" fill="#00ff66"/>
+      <text x="14" y="17" class="mono t-badge" fill="#ffffff">BUS: LIVE NDJSON</text>
 
-  <!-- 3. TOOL CALL SPEC -->
-  <g transform="translate(620, 150)">
-    <rect width="230" height="135" rx="16" fill="url(#cardGrad)" stroke="rgba(0, 240, 255, 0.4)" stroke-width="1.5"/>
-    <rect x="1" y="1" width="228" height="4" rx="2" fill="url(#cyanGrad)"/>
-    <text x="22" y="36" class="node-tag" fill="#00f0ff">STAGE 03</text>
-    <text x="22" y="66" class="node-title">ToolCall Event</text>
-    <text x="22" y="94" class="node-desc">name, args, description,</text>
-    <text x="22" y="114" class="node-desc">target path &amp; call ID</text>
-  </g>
+      <!-- Badge 2 -->
+      <rect x="132" y="0" width="110" height="26" fill="#141414" stroke="#333333" stroke-width="1"/>
+      <rect x="132" y="0" width="6" height="26" fill="#ff3e00"/>
+      <text x="146" y="17" class="mono t-badge" fill="#ffffff">GATE: HARDENED</text>
 
-  <!-- Connector 3 -> 4 -->
-  <path d="M 850 217 L 918 217" class="connector-amber"/>
-
-  <!-- 4. GATE / APPROVAL (AMBER GATED) -->
-  <g transform="translate(920, 150)">
-    <rect width="240" height="135" rx="16" fill="url(#cardAmberGrad)" stroke="rgba(255, 209, 102, 0.6)" stroke-width="2"/>
-    <rect x="1" y="1" width="238" height="4" rx="2" fill="url(#amberGrad)"/>
-    <text x="22" y="36" class="node-tag" fill="#ffd166">SECURITY GATE</text>
-    <text x="22" y="66" class="node-amber-title">Approval Gate</text>
-    <text x="22" y="94" class="node-desc" fill="#e0c28e">needs_approval verification</text>
-    <text x="22" y="114" class="node-desc" fill="#e0c28e">Human-in-the-loop allow / deny</text>
-  </g>
-
-  <!-- Connector 4 -> 5 -->
-  <path d="M 1160 217 L 1228 217" class="connector"/>
-
-  <!-- 5. DISPATCHER -->
-  <g transform="translate(1230, 150)">
-    <rect width="270" height="135" rx="16" fill="url(#cardGrad)" stroke="rgba(0, 240, 255, 0.4)" stroke-width="1.5"/>
-    <rect x="1" y="1" width="268" height="4" rx="2" fill="url(#cyanGrad)"/>
-    <text x="22" y="36" class="node-tag" fill="#00f0ff">STAGE 04</text>
-    <text x="22" y="66" class="node-title">Tool Dispatcher</text>
-    <text x="22" y="94" class="node-desc">Validates against schema &amp;</text>
-    <text x="22" y="114" class="node-desc">routes to targeted executor</text>
-  </g>
-
-  <!-- ==================== CONNECTOR TOP TO BOTTOM ==================== -->
-  <path d="M 1365 285 L 1365 375" class="connector"/>
-
-  <!-- ==================== BOTTOM ROW: EXECUTION & STREAMING ==================== -->
-
-  <!-- 6. EXECUTOR CLUSTER -->
-  <g transform="translate(1150, 380)">
-    <rect width="350" height="160" rx="18" fill="url(#cardGrad)" stroke="rgba(0, 240, 255, 0.45)" stroke-width="1.5"/>
-    <rect x="1" y="1" width="348" height="4" rx="2" fill="url(#cyanGrad)"/>
-    <text x="24" y="36" class="node-tag" fill="#00f0ff">EXECUTION ENVIRONMENT</text>
-    <text x="24" y="68" class="node-title">Tool Executors</text>
-    <g transform="translate(24, 88)">
-      <rect x="0" y="0" width="60" height="24" rx="6" fill="rgba(0, 240, 255, 0.1)"/>
-      <text x="30" y="16" text-anchor="middle" class="node-tag" fill="#00f0ff">SHELL</text>
-      <rect x="68" y="0" width="56" height="24" rx="6" fill="rgba(0, 240, 255, 0.1)"/>
-      <text x="96" y="16" text-anchor="middle" class="node-tag" fill="#00f0ff">READ</text>
-      <rect x="132" y="0" width="56" height="24" rx="6" fill="rgba(0, 240, 255, 0.1)"/>
-      <text x="160" y="16" text-anchor="middle" class="node-tag" fill="#00f0ff">EDIT</text>
-      <rect x="196" y="0" width="52" height="24" rx="6" fill="rgba(0, 240, 255, 0.1)"/>
-      <text x="222" y="16" text-anchor="middle" class="node-tag" fill="#00f0ff">MCP</text>
-      <rect x="256" y="0" width="46" height="24" rx="6" fill="rgba(0, 240, 255, 0.1)"/>
-      <text x="279" y="16" text-anchor="middle" class="node-tag" fill="#00f0ff">WEB</text>
-    </g>
-    <text x="24" y="142" class="node-desc">Streams stdout, stderr, &amp; status live</text>
-  </g>
-
-  <!-- Connector 6 -> 7 -->
-  <path d="M 1150 460 L 1058 460" class="connector-emerald"/>
-
-  <!-- 7. STREAMING UPDATES ENGINE -->
-  <g transform="translate(680, 380)">
-    <rect width="370" height="160" rx="18" fill="url(#cardGrad)" stroke="rgba(0, 245, 212, 0.5)" stroke-width="1.5"/>
-    <rect x="1" y="1" width="368" height="4" rx="2" fill="url(#emeraldGrad)"/>
-    <text x="24" y="36" class="node-tag" fill="#00f5d4">ASYNC TELEMETRY</text>
-    <text x="24" y="68" class="node-title">Streaming Lifecycle</text>
-    <g transform="translate(24, 88)">
-      <circle cx="6" cy="7" r="4" fill="#00f0ff"/>
-      <text x="20" y="12" class="node-desc">ToolCallStartedEvent</text>
-      <circle cx="6" cy="27" r="4" fill="#00f5d4"/>
-      <text x="20" y="32" class="node-desc">ToolCallDeltaEvent (stdout/stderr chunks)</text>
-      <circle cx="6" cy="47" r="4" fill="#ffd166"/>
-      <text x="20" y="52" class="node-desc">ToolCallCompletedEvent (final result payload)</text>
+      <!-- Badge 3 -->
+      <rect x="254" y="0" width="130" height="26" fill="#ffffff"/>
+      <text x="262" y="17" class="mono t-badge" fill="#000000">SPEC: v1.4.0</text>
     </g>
   </g>
 
-  <!-- Connector 7 -> 8 -->
-  <path d="M 680 460 L 598 460" class="connector-amber"/>
+  <!-- Divider Line -->
+  <line x1="50" y1="112" x2="1550" y2="112" stroke="#222222" stroke-width="1.5"/>
 
-  <!-- 8. RESULT SYNTHESIS -->
-  <g transform="translate(340, 380)">
-    <rect width="250" height="160" rx="18" fill="url(#cardAmberGrad)" stroke="rgba(255, 209, 102, 0.5)" stroke-width="1.5"/>
-    <rect x="1" y="1" width="248" height="4" rx="2" fill="url(#amberGrad)"/>
-    <text x="22" y="36" class="node-tag" fill="#ffd166">RESULT ENGINE</text>
-    <text x="22" y="68" class="node-amber-title">Turn Result</text>
-    <text x="22" y="98" class="node-desc" fill="#e0c28e">Assembles execution output,</text>
-    <text x="22" y="118" class="node-desc" fill="#e0c28e">calculates token metrics,</text>
-    <text x="22" y="138" class="node-desc" fill="#e0c28e">prepares next loop turn</text>
+  <!-- ========================================================================= -->
+  <!-- TOP ROW: INGESTION, REASONING, DISPATCH & GATEWAY                         -->
+  <!-- ========================================================================= -->
+
+  <!-- NODE 01: LLM AGENT -->
+  <g transform="translate(50, 140)">
+    <rect width="260" height="175" fill="#111111" stroke="#ffffff" stroke-width="2"/>
+    <rect x="0" y="0" width="260" height="28" fill="#ffffff"/>
+    <text x="12" y="19" class="mono t-node-head" fill="#000000">01 // INTAKE &amp; REASONING</text>
+    
+    <text x="16" y="58" class="sans t-node-title">LLM Agent</text>
+    <text x="16" y="82" class="mono t-node-code">PROVIDER: OPENAI / ANTHROPIC</text>
+    
+    <line x1="16" y1="94" x2="244" y2="94" stroke="#222222" stroke-width="1"/>
+    <text x="16" y="114" class="sans t-node-body">Consumes prompt instructions,</text>
+    <text x="16" y="132" class="sans t-node-body">hydrated context diffs &amp;</text>
+    <text x="16" y="150" class="sans t-node-body">synthesizes tool invocation intent.</text>
+
+    <rect x="180" y="5" width="70" height="18" fill="#000000"/>
+    <text x="188" y="17" class="mono t-badge" fill="#00ff66">STATE: READY</text>
   </g>
 
-  <!-- Connector 8 -> 9 -->
-  <path d="M 340 460 L 278 460" class="connector"/>
+  <!-- Trace 01 -> 02 -->
+  <path d="M 310 227 L 350 227" class="wire-w"/>
 
-  <!-- 9. LLM RE-ENGAGE (LOOP COMPLETION) -->
-  <g transform="translate(60, 380)">
-    <rect width="210" height="160" rx="18" fill="url(#cardGrad)" stroke="rgba(0, 240, 255, 0.45)" stroke-width="1.5"/>
-    <rect x="1" y="1" width="208" height="4" rx="2" fill="url(#cyanGrad)"/>
-    <text x="22" y="36" class="node-tag" fill="#00f0ff">LOOP FEEDBACK</text>
-    <text x="22" y="68" class="node-title">LLM Reasoning</text>
-    <text x="22" y="98" class="node-desc">Inspects tool output,</text>
-    <text x="22" y="118" class="node-desc">evaluates success,</text>
-    <text x="22" y="138" class="node-desc">decides next action / stops</text>
+  <!-- NODE 02: PLAN & INTENT -->
+  <g transform="translate(350, 140)">
+    <rect width="250" height="175" fill="#111111" stroke="#ffffff" stroke-width="1.5"/>
+    <rect x="0" y="0" width="250" height="28" fill="#222222"/>
+    <text x="12" y="19" class="mono t-node-head" fill="#ffffff">02 // PLAN SYNTHESIS</text>
+    
+    <text x="16" y="58" class="sans t-node-title">Plan &amp; Intent</text>
+    <text x="16" y="82" class="mono t-node-code">SCHEMA: ToolCallSequence</text>
+    
+    <line x1="16" y1="94" x2="234" y2="94" stroke="#222222" stroke-width="1"/>
+    <text x="16" y="114" class="sans t-node-body">Decomposes mission into atomic</text>
+    <text x="16" y="132" class="sans t-node-body">steps. Validates prerequisite</text>
+    <text x="16" y="150" class="sans t-node-body">files &amp; generates parameters.</text>
   </g>
 
-  <!-- Return Loop Line: Stage 9 up to Stage 1 -->
-  <path d="M 165 380 L 165 295" class="connector" stroke-dasharray="6 6"/>
+  <!-- Trace 02 -> 03 -->
+  <path d="M 600 227 L 640 227" class="wire-w"/>
 
-  <!-- ==================== BOTTOM FOUNDATION SYSTEMS ==================== -->
-
-  <!-- MCP Snapshot Cache Panel -->
-  <g transform="translate(180, 620)">
-    <rect width="580" height="120" rx="16" fill="rgba(8, 20, 36, 0.7)" stroke="rgba(0, 240, 255, 0.25)" stroke-width="1.5"/>
-    <text x="28" y="36" class="node-tag" fill="#00f0ff">INFRASTRUCTURE CACHE</text>
-    <text x="28" y="68" class="node-title">MCP Snapshot Cache</text>
-    <text x="28" y="96" class="brand-sub">External tool definitions &amp; schema schemas are cached with generational invalidation.</text>
+  <!-- NODE 03: TOOLCALL EVENT SPEC -->
+  <g transform="translate(640, 140)">
+    <rect width="250" height="175" fill="#111111" stroke="#ffffff" stroke-width="1.5"/>
+    <rect x="0" y="0" width="250" height="28" fill="#222222"/>
+    <text x="12" y="19" class="mono t-node-head" fill="#ffffff">03 // PROTOCOL FRAME</text>
+    
+    <text x="16" y="58" class="sans t-node-title">ToolCall Event</text>
+    <text x="16" y="82" class="mono t-node-code">FRAME: {id, name, args}</text>
+    
+    <line x1="16" y1="94" x2="234" y2="94" stroke="#222222" stroke-width="1"/>
+    <text x="16" y="114" class="sans t-node-body">Encapsulates tool name, args,</text>
+    <text x="16" y="132" class="sans t-node-body">correlation call_id &amp; target path</text>
+    <text x="16" y="150" class="sans t-node-body">into a typed protocol object.</text>
   </g>
 
-  <!-- Lazy-Loaded Request Context Panel -->
-  <g transform="translate(840, 620)">
-    <rect width="580" height="120" rx="16" fill="rgba(8, 20, 36, 0.7)" stroke="rgba(0, 240, 255, 0.25)" stroke-width="1.5"/>
-    <text x="28" y="36" class="node-tag" fill="#00f5d4">CONTEXT SYSTEM</text>
-    <text x="28" y="68" class="node-title">Lazy-Loaded Request Context</text>
-    <text x="28" y="96" class="brand-sub">Sections hydrate on-demand so every turn transmits strictly necessary context tokens.</text>
+  <!-- Trace 03 -> 04 (Hazard Orange) -->
+  <path d="M 890 227 L 930 227" class="wire-o"/>
+
+  <!-- NODE 04: APPROVAL GATE (BRUTALIST HAZARD CARD) -->
+  <g transform="translate(930, 140)">
+    <rect width="290" height="175" fill="#140a08" stroke="#ff3e00" stroke-width="2.5"/>
+    <rect x="0" y="0" width="290" height="28" fill="#ff3e00"/>
+    <text x="12" y="19" class="mono t-node-head" fill="#ffffff">CRITICAL // APPROVAL GATE</text>
+    
+    <text x="16" y="58" class="sans t-node-title" fill="#ffffff">Security Gate</text>
+    <text x="16" y="82" class="mono t-node-code" fill="#ff7755">POLICY: AUTO | PRE_CHECK | POST</text>
+    
+    <line x1="16" y1="94" x2="274" y2="94" stroke="#441a12" stroke-width="1"/>
+    <text x="16" y="114" class="sans t-node-body" fill="#ddbbbb">Evaluates executor risk profile.</text>
+    <text x="16" y="132" class="sans t-node-body" fill="#ddbbbb">Requires human sign-off for</text>
+    <text x="16" y="150" class="sans t-node-body" fill="#ddbbbb">destructive shell &amp; file edits.</text>
+
+    <rect x="200" y="5" width="80" height="18" fill="#000000"/>
+    <text x="208" y="17" class="mono t-badge" fill="#ff3e00">[!] ARMED</text>
   </g>
 
-  <!-- Foundation Connectors -->
-  <path d="M 470 620 L 470 545" class="dash-line" marker-end="url(#arrowCyan)"/>
-  <path d="M 1130 620 L 1130 545" class="dash-line" marker-end="url(#arrowEmerald)"/>
+  <!-- Trace 04 -> 05 -->
+  <path d="M 1220 227 L 1260 227" class="wire-w"/>
 
+  <!-- NODE 05: TOOL DISPATCHER -->
+  <g transform="translate(1260, 140)">
+    <rect width="290" height="175" fill="#111111" stroke="#ffffff" stroke-width="2"/>
+    <rect x="0" y="0" width="290" height="28" fill="#ffffff"/>
+    <text x="12" y="19" class="mono t-node-head" fill="#000000">04 // DISPATCH ROUTER</text>
+    
+    <text x="16" y="58" class="sans t-node-title">Tool Dispatcher</text>
+    <text x="16" y="82" class="mono t-node-code">ROUTER: Dynamic Resolver</text>
+    
+    <line x1="16" y1="94" x2="274" y2="94" stroke="#222222" stroke-width="1"/>
+    <text x="16" y="114" class="sans t-node-body">Validates JSON argument schemas</text>
+    <text x="16" y="132" class="sans t-node-body">and routes call to bound local or</text>
+    <text x="16" y="150" class="sans t-node-body">MCP protocol executors.</text>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- VERTICAL BUS: STEP-DOWN TO EXECUTION TIER                                 -->
+  <!-- ========================================================================= -->
+  <path d="M 1405 315 L 1405 390" class="wire-w"/>
+
+  <!-- ========================================================================= -->
+  <!-- MIDDLE ROW: EXECUTORS, TELEMETRY & RECURSION                              -->
+  <!-- ========================================================================= -->
+
+  <!-- NODE 06: EXECUTOR CLUSTER -->
+  <g transform="translate(1180, 390)">
+    <rect width="370" height="210" fill="#111111" stroke="#ffffff" stroke-width="2"/>
+    <rect x="0" y="0" width="370" height="28" fill="#222222"/>
+    <text x="12" y="19" class="mono t-node-head" fill="#ffffff">05 // ISOLATED EXECUTION ENVIRONMENT</text>
+    
+    <text x="16" y="58" class="sans t-node-title">Tool Executors</text>
+    <text x="16" y="80" class="mono t-node-code">RUNTIME: Subprocess / HTTP / Stdio</text>
+
+    <!-- Executor Tag Matrix -->
+    <g transform="translate(16, 96)">
+      <!-- Row 1 -->
+      <rect x="0" y="0" width="76" height="24" fill="#1a1a1a" stroke="#444444" stroke-width="1"/>
+      <text x="12" y="16" class="mono t-badge" fill="#ffffff">SHELL</text>
+      
+      <rect x="84" y="0" width="68" height="24" fill="#1a1a1a" stroke="#444444" stroke-width="1"/>
+      <text x="12" y="16" class="mono t-badge" fill="#ffffff" transform="translate(84, 0)">READ</text>
+
+      <rect x="160" y="0" width="68" height="24" fill="#1a1a1a" stroke="#444444" stroke-width="1"/>
+      <text x="12" y="16" class="mono t-badge" fill="#ffffff" transform="translate(160, 0)">EDIT</text>
+
+      <rect x="236" y="0" width="96" height="24" fill="#1a1a1a" stroke="#444444" stroke-width="1"/>
+      <text x="12" y="16" class="mono t-badge" fill="#ffffff" transform="translate(236, 0)">WEB_FETCH</text>
+
+      <!-- Row 2 -->
+      <rect x="0" y="32" width="68" height="24" fill="#1a1a1a" stroke="#444444" stroke-width="1"/>
+      <text x="12" y="48" class="mono t-badge" fill="#ffffff">GREP</text>
+
+      <rect x="76" y="32" width="100" height="24" fill="#1a1a1a" stroke="#444444" stroke-width="1"/>
+      <text x="12" y="48" class="mono t-badge" fill="#ffffff" transform="translate(76, 0)">MCP CLIENT</text>
+
+      <rect x="184" y="32" width="108" height="24" fill="#1a1a1a" stroke="#444444" stroke-width="1"/>
+      <text x="12" y="48" class="mono t-badge" fill="#ffffff" transform="translate(184, 0)">WEB_SEARCH</text>
+    </g>
+
+    <text x="16" y="185" class="sans t-node-body">Streams stdout/stderr buffer deltas asynchronously.</text>
+  </g>
+
+  <!-- Trace 06 -> 07 (Acid Green) -->
+  <path d="M 1180 495 L 1100 495" class="wire-g"/>
+
+  <!-- NODE 07: STREAMING TELEMETRY ENGINE -->
+  <g transform="translate(680, 390)">
+    <rect width="420" height="210" fill="#0d140f" stroke="#00ff66" stroke-width="2"/>
+    <rect x="0" y="0" width="420" height="28" fill="#00ff66"/>
+    <text x="12" y="19" class="mono t-node-head" fill="#000000">06 // ASYNC STREAMING TELEMETRY</text>
+    
+    <text x="16" y="58" class="sans t-node-title" fill="#ffffff">Streaming Lifecycle</text>
+    <text x="16" y="80" class="mono t-node-code" fill="#00dd55">PROTOCOL: Generator[ToolEvent, None, None]</text>
+
+    <!-- Event Rows -->
+    <g transform="translate(16, 98)">
+      <rect x="0" y="0" width="388" height="26" fill="#142217" stroke="#00aa44" stroke-width="1"/>
+      <rect x="0" y="0" width="6" height="26" fill="#ffffff"/>
+      <text x="14" y="17" class="mono t-node-code" fill="#ffffff">ToolCallStartedEvent</text>
+      <text x="210" y="17" class="mono t-badge" fill="#88cc99">[INIT: ABOUT TO RUN]</text>
+
+      <rect x="0" y="34" width="388" height="26" fill="#142217" stroke="#00aa44" stroke-width="1"/>
+      <rect x="0" y="0" width="6" height="26" fill="#00ff66" transform="translate(0, 34)"/>
+      <text x="14" y="51" class="mono t-node-code" fill="#00ff66">ToolCallDeltaEvent</text>
+      <text x="210" y="51" class="mono t-badge" fill="#88cc99">[PROGRESS: STDOUT/THINK]</text>
+
+      <rect x="0" y="68" width="388" height="26" fill="#142217" stroke="#00aa44" stroke-width="1"/>
+      <rect x="0" y="0" width="6" height="26" fill="#ff3e00" transform="translate(0, 68)"/>
+      <text x="14" y="85" class="mono t-node-code" fill="#ffffff">ToolCallCompletedEvent</text>
+      <text x="210" y="85" class="mono t-badge" fill="#88cc99">[TERMINATION: RESULT]</text>
+    </g>
+  </g>
+
+  <!-- Trace 07 -> 08 -->
+  <path d="M 680 495 L 600 495" class="wire-w"/>
+
+  <!-- NODE 08: RESULT ENGINE -->
+  <g transform="translate(340, 390)">
+    <rect width="260" height="210" fill="#111111" stroke="#ffffff" stroke-width="1.5"/>
+    <rect x="0" y="0" width="260" height="28" fill="#222222"/>
+    <text x="12" y="19" class="mono t-node-head" fill="#ffffff">07 // RESULT AGGREGATOR</text>
+    
+    <text x="16" y="58" class="sans t-node-title">Turn Result</text>
+    <text x="16" y="80" class="mono t-node-code">OBJECT: ExecutionSummary</text>
+    
+    <line x1="16" y1="94" x2="244" y2="94" stroke="#222222" stroke-width="1"/>
+    <text x="16" y="114" class="sans t-node-body">Aggregates execution output,</text>
+    <text x="16" y="132" class="sans t-node-body">evaluates exit codes, calculates</text>
+    <text x="16" y="150" class="sans t-node-body">token metrics and builds next turn</text>
+    <text x="16" y="168" class="sans t-node-body">conversation state history.</text>
+  </g>
+
+  <!-- Trace 08 -> 09 -->
+  <path d="M 340 495 L 260 495" class="wire-w"/>
+
+  <!-- NODE 09: RECURSIVE REASONING / LOOP COMPLETION -->
+  <g transform="translate(50, 390)">
+    <rect width="210" height="210" fill="#111111" stroke="#ffffff" stroke-width="2"/>
+    <rect x="0" y="0" width="210" height="28" fill="#ffffff"/>
+    <text x="12" y="19" class="mono t-node-head" fill="#000000">08 // LOOP RECURSION</text>
+    
+    <text x="16" y="58" class="sans t-node-title">LLM Evaluation</text>
+    <text x="16" y="80" class="mono t-node-code">ACTION: Inspect &amp; Branch</text>
+    
+    <line x1="16" y1="94" x2="194" y2="94" stroke="#222222" stroke-width="1"/>
+    <text x="16" y="114" class="sans t-node-body">Inspects tool output.</text>
+    <text x="16" y="132" class="sans t-node-body">Branches on failure or</text>
+    <text x="16" y="150" class="sans t-node-body">proceeds to next step.</text>
+    <text x="16" y="174" class="mono t-badge" fill="#ff3e00">EXIT OR RE-ENTER</text>
+  </g>
+
+  <!-- Recursive Feedback Loop Line (Stage 08 up to Stage 01) -->
+  <path d="M 155 390 L 155 325" class="wire-dash"/>
+  <rect x="110" y="345" width="90" height="20" fill="#090909" stroke="#444444" stroke-width="1"/>
+  <text x="118" y="359" class="mono t-badge" fill="#ffffff">RECURSE LOOP</text>
+
+  <!-- ========================================================================= -->
+  <!-- FOUNDATION TIER: CACHE & CONTEXT SUBSYSTEMS                                -->
+  <!-- ========================================================================= -->
+
+  <!-- MCP SNAPSHOT CACHE -->
+  <g transform="translate(50, 650)">
+    <rect width="470" height="170" fill="#111111" stroke="#333333" stroke-width="1.5"/>
+    <rect x="0" y="0" width="470" height="28" fill="#1a1a1a"/>
+    <text x="12" y="19" class="mono t-node-head" fill="#aaaaaa">FOUNDATION 01 // TOOL SPEC CACHE</text>
+    
+    <text x="16" y="58" class="sans t-node-title">MCP Snapshot Cache</text>
+    <text x="16" y="80" class="mono t-node-code">MECHANISM: Generational Invalidation Checksums</text>
+    
+    <line x1="16" y1="94" x2="454" y2="94" stroke="#222222" stroke-width="1"/>
+    <text x="16" y="116" class="sans t-node-body">Caches remote Model Context Protocol (MCP) tool schemas across turn cycles.</text>
+    <text x="16" y="136" class="sans t-node-body">Eliminates per-turn round-trip handshake latency and token overhead.</text>
+  </g>
+
+  <!-- LAZY-LOADED REQUEST CONTEXT -->
+  <g transform="translate(560, 650)">
+    <rect width="470" height="170" fill="#111111" stroke="#333333" stroke-width="1.5"/>
+    <rect x="0" y="0" width="470" height="28" fill="#1a1a1a"/>
+    <text x="12" y="19" class="mono t-node-head" fill="#aaaaaa">FOUNDATION 02 // CONTEXT INJECTION</text>
+    
+    <text x="16" y="58" class="sans t-node-title">Lazy Request Context</text>
+    <text x="16" y="80" class="mono t-node-code">PIPELINE: On-Demand Dynamic Hydration</text>
+    
+    <line x1="16" y1="94" x2="454" y2="94" stroke="#222222" stroke-width="1"/>
+    <text x="16" y="116" class="sans t-node-body">Sections (git diffs, directory trees, env vars, AGENTS.md) hydrate on demand.</text>
+    <text x="16" y="136" class="sans t-node-body">Ensures prompt window contains strictly necessary tokens.</text>
+  </g>
+
+  <!-- MASTER LOOP HARNESS -->
+  <g transform="translate(1070, 650)">
+    <rect width="480" height="170" fill="#111111" stroke="#333333" stroke-width="1.5"/>
+    <rect x="0" y="0" width="480" height="28" fill="#1a1a1a"/>
+    <text x="12" y="19" class="mono t-node-head" fill="#aaaaaa">FOUNDATION 03 // MULTI-TIER HIERARCHY</text>
+    
+    <text x="16" y="58" class="sans t-node-title">Master Loop Harness</text>
+    <text x="16" y="80" class="mono t-node-code">STACK: Master &gt; Mission &gt; Goal &gt; Agent &gt; Workflow &gt; Tool</text>
+    
+    <line x1="16" y1="94" x2="464" y2="94" stroke="#222222" stroke-width="1"/>
+    <text x="16" y="116" class="sans t-node-body">Orchestrates multi-turn objectives across CLI, Ink TUI, Child NDJSON Bridge,</text>
+    <text x="16" y="136" class="sans t-node-body">and headless remote Telegram Codex agents.</text>
+  </g>
+
+  <!-- Foundation Traces to upper nodes -->
+  <path d="M 285 650 L 285 610" class="wire-dash"/>
+  <path d="M 795 650 L 795 610" class="wire-dash"/>
+  <path d="M 1310 650 L 1310 610" class="wire-dash"/>
+
+  <!-- Footer Technical Annotation -->
+  <g transform="translate(50, 868)">
+    <text x="0" y="0" class="mono t-sub">AGENT-LOOP PROTOCOL // BRUTALIST ARCHITECTURAL SPECIFICATION • VER: 1.4.0 • REF_ID: 0x98FF</text>
+    <text x="1490" y="0" text-anchor="end" class="mono t-sub">FIG: 01-ARCH</text>
+  </g>
 </svg>

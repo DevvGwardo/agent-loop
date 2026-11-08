@@ -1,27 +1,62 @@
 <p align="center">
-  <img src="assets/banner.jpg" alt="agent-loop Banner" />
+  <img src="assets/banner.jpg" alt="agent-loop Banner" width="100%" />
 </p>
 
-# agent-loop
+<div align="center">
 
-A reference implementation of a streaming AI coding agent protocol.
+# `AGENT-LOOP`
+### STREAMING AI CODING AGENT PROTOCOL // REF-01
 
-Inspired by the architecture used by modern coding agents, `agent-loop` is designed to be readable, extensible, and a solid foundation for building your own AI coding tools.
+[![Protocol Spec](https://img.shields.io/badge/SPEC-v1.4.0-000000?style=for-the-badge&color=ff3e00)](docs/assets/agent-loop-architecture.svg)
+[![Bus](https://img.shields.io/badge/BUS-NDJSON_STREAMING-000000?style=for-the-badge&color=00ff66)](docs/assets/agent-loop-streaming.svg)
+[![Security Gate](https://img.shields.io/badge/SECURITY-HARDENED_GATE-000000?style=for-the-badge&color=ffffff)](#approval-gates)
+[![License: MIT](https://img.shields.io/badge/LICENSE-MIT-000000?style=for-the-badge)](LICENSE)
+
+</div>
+
+---
+
+> **SYSTEM MANIFESTO**  
+> A reference implementation of a streaming, multi-tier AI coding agent protocol.  
+> Utilitarian, deterministic, and built with zero polling overhead. Designed as the solid foundation for production-grade coding agents, terminal interfaces, and autonomous orchestration loops.
+
+---
+
+### PROTOCOL SPECIFICATIONS
+
+| System Layer | Subsystem / Mechanism | Specification Guarantee |
+| :--- | :--- | :--- |
+| **Telemetry Bus** | Asynchronous Non-blocking Generator | Yields `ToolCallDeltaEvent` buffers in-thread with 0 polling |
+| **Security Surface** | Three-Tier Approval Gate | Enforces `AUTO`, `PRE_CHECK`, and `POST_CHECK` verification |
+| **Transport Format** | Standard Python Generator / NDJSON | Stdout streaming bridge via `scripts/run-as-child.py` |
+| **Context Engine** | Generational Cache & Lazy Hydration | On-demand MCP tool schema caching & git diff hydration |
+| **Control Stack** | Recursive 6-Tier Execution Engine | `MasterLoop` > `Mission` > `Goal` > `Agent` > `Workflow` > `Tool` |
+
+---
 
 ## Architecture
+
+The runtime executes an orthogonal, closed-circuit telemetry loop across language model reasoning, policy verification, sandboxed tool dispatch, and live stdout/stderr chunk streaming:
 
 <p align="center">
   <img src="docs/assets/agent-loop-architecture.svg" alt="agent-loop architecture diagram" width="100%" />
 </p>
 
+### Streaming Lifecycle Protocol
+
+Every tool invocation follows an unbuffered asynchronous event lifecycle:
+
 <p align="center">
   <img src="docs/assets/agent-loop-streaming.svg" alt="agent-loop streaming lifecycle diagram" width="100%" />
 </p>
 
-Every tool call follows a streaming lifecycle:
-1. `ToolCallStartedEvent` - about to run X
-2. `ToolCallDeltaEvent` - incremental progress (stdout, stderr, thinking)
-3. `ToolCallCompletedEvent` - final result
+| Stage | Event Frame | Wire Code | Operational Phase |
+| :---: | :--- | :---: | :--- |
+| `01` | **`ToolCallStartedEvent`** | `T_0` | Dispatched immediately prior to execution; parameters frozen and validated against schema. |
+| `02` | **`ToolCallDeltaEvent`** | `T_DELTA` | Live incremental stdout, stderr chunks, and model extended thinking streamed without buffer blockage. |
+| `03` | **`ToolCallCompletedEvent`** | `T_END` | Execution termination containing final exit code, duration in milliseconds, and aggregated output payload. |
+
+---
 
 ## Quick Start
 
@@ -39,10 +74,12 @@ for event in agent.run("list the current directory"):
         print(f"  {event.data}")
 ```
 
+---
+
 ## Tool Executors
 
 | Tool | Name | Args | Streaming |
-|------|------|------|-----------|
+| :--- | :--- | :--- | :---: |
 | **Shell** | `shell` | command, working_directory, timeout, env | ✅ stdout/stderr deltas |
 | **Read** | `read` | path, offset, limit | No |
 | **Edit** | `edit` | path, mode (str_replace/replace/stream_content) | No |
@@ -50,12 +87,12 @@ for event in agent.run("list the current directory"):
 | **Grep** | `grep` | pattern, path, file_glob, context | No |
 | **Web Search** | `web_search` | query | No |
 
+---
+
 ## Connecting an LLM
 
-The base `Agent` is model-agnostic — you hand it a `tool_sequence` to replay.
-To let a real model decide which tools to call, use `LLMAgent`, which drives a
-call-and-respond loop against a provider of your choice. Pick a provider by
-name and a model id:
+The base `Agent` is model-agnostic — you hand it a `tool_sequence` to replay.  
+To let a real model decide which tools to call, use `LLMAgent`, which drives a call-and-respond loop against a provider of your choice. Pick a provider by name and a model id:
 
 ```python
 from agent_loop.llm import LLMAgent
@@ -71,11 +108,10 @@ for event in agent.run("List the Python files and read the smallest one"):
     print(f"[{type(event).__name__}] {getattr(event, 'tool_name', '')}")
 ```
 
-Providers are read from environment variables for their API keys. No extra
-SDKs are needed — everything runs over `httpx` (already a dependency).
+Providers are read from environment variables for their API keys. No extra SDKs are needed — everything runs over `httpx` (already a dependency).
 
 | Provider | Wire format | API key env var |
-|----------|-------------|-----------------|
+| :--- | :--- | :--- |
 | `openai` | OpenAI chat | `OPENAI_API_KEY` |
 | `openrouter` | OpenAI chat | `OPENROUTER_API_KEY` |
 | `groq` | OpenAI chat | `GROQ_API_KEY` |
@@ -87,9 +123,7 @@ SDKs are needed — everything runs over `httpx` (already a dependency).
 | `ollama` | OpenAI chat | _(local, none)_ |
 | `anthropic` | Anthropic messages | `ANTHROPIC_API_KEY` |
 
-Dangerous tool calls (flagged by `executor.needs_approval`) are denied unless
-you pass `auto_approve=True` or an `approver=callable`. For tests and offline
-demos, `ScriptedProvider` returns canned responses with no network:
+Dangerous tool calls (flagged by `executor.needs_approval`) are denied unless you pass `auto_approve=True` or an `approver=callable`. For tests and offline demos, `ScriptedProvider` returns canned responses with no network:
 
 ```python
 from agent_loop.llm import LLMAgent, ScriptedProvider, LLMResponse, LLMToolCall
@@ -106,6 +140,8 @@ Run the full example (offline by default; set `LLM_PROVIDER`/`LLM_MODEL` for a r
 ```bash
 python examples/llm_agent.py
 ```
+
+---
 
 ## MCP Snapshot Cache
 
@@ -125,9 +161,11 @@ snapshot = cache.get_snapshot()
 assert snapshot.checksum == cache.get_checksum("sqlite")
 ```
 
+---
+
 ## Approval Gates
 
-Three-tier security model (AUTO / PRE_CHECK / POST_CHECK) that gates tool calls based on risk classification:
+Three-tier security model (`AUTO` / `PRE_CHECK` / `POST_CHECK`) that gates tool calls based on risk classification:
 
 ```python
 from agent_loop.approval import ApprovalGate
@@ -136,6 +174,8 @@ gate = ApprovalGate()
 result = gate.evaluate("shell", {"command": "rm -rf /"})
 assert result.status == "requires_approval"
 ```
+
+---
 
 ## Context Builder
 
@@ -150,7 +190,9 @@ ctx.set_environ({"PWD": "/workspace"})
 payload = ctx.build()
 ```
 
-## Agent Skills (from Cursor protocol)
+---
+
+## Agent Skills (Cursor Protocol Compatible)
 
 Skills provide reusable, shareable agent instructions loaded at runtime:
 
@@ -162,12 +204,11 @@ registry.load_skill("deploy", "Run `npm run build && npm run deploy`")
 active = registry.for_tool("shell")
 ```
 
+---
+
 ## Coding Agent Harness
 
-`CodingAgentHarness` is the integration layer for building your own agent
-surface. It exposes the local coding tools to an OpenAI-compatible tool-calling
-model, keeps conversation/tool history, and yields the same streaming tool
-events as `Agent.run()`.
+`CodingAgentHarness` is the integration layer for building your own agent surface. It exposes the local coding tools to an OpenAI-compatible tool-calling model, keeps conversation/tool history, and yields the same streaming tool events as `Agent.run()`.
 
 ```python
 from agent_loop import CodingAgentHarness, OpenAICompatibleChatClient
@@ -188,8 +229,7 @@ while True:
         break
 ```
 
-For controller processes, `scripts/run-as-child.py` accepts JSON on stdin and
-streams NDJSON on stdout:
+For controller processes, `scripts/run-as-child.py` accepts JSON on stdin and streams NDJSON on stdout:
 
 ```bash
 echo '{
@@ -211,24 +251,24 @@ echo '{
 }' | python3 scripts/run-as-child.py
 ```
 
+---
+
 ## Master Loop Harness
 
 `MasterLoopHarness` adds the long-running orchestration layer:
 
 ```text
-master loop
-  mission loop
-    goal loop
-      agent loop
-        workflow loop
-          tool loop
+┌────────────────────────────────────────────────────────┐
+│ MASTER LOOP                                            │
+│   └── MISSION LOOP                                     │
+│         └── GOAL LOOP                                  │
+│               └── AGENT LOOP                           │
+│                     └── WORKFLOW LOOP                  │
+│                           └── TOOL LOOP                │
+└────────────────────────────────────────────────────────┘
 ```
 
-This is useful when a single prompt is too small for the job. A mission can run
-for one cycle, several cycles, or perpetually with a `should_continue`
-callback. Every layer emits `LoopLifecycleEvent` snapshots, and tool calls still
-stream through the existing `ToolCallStartedEvent` / `ToolCallDeltaEvent` /
-`ToolCallCompletedEvent` protocol.
+This is useful when a single prompt is too small for the job. A mission can run for one cycle, several cycles, or perpetually with a `should_continue` callback. Every layer emits `LoopLifecycleEvent` snapshots, and tool calls still stream through the existing `ToolCallStartedEvent` / `ToolCallDeltaEvent` / `ToolCallCompletedEvent` protocol.
 
 ```python
 from agent_loop import (
@@ -272,8 +312,7 @@ for event in master.run(mission):
     print(event)
 ```
 
-Headless controllers can run the same hierarchy by passing `mode: "mission"` to
-the child bridge:
+Headless controllers can run the same hierarchy by passing `mode: "mission"` to the child bridge:
 
 ```bash
 echo '{
@@ -285,15 +324,9 @@ echo '{
 }' | python3 scripts/run-as-child.py
 ```
 
-The Ink TUI exposes the hierarchy as a mission-control panel. Prefix a prompt
-with `/mission` to route it through the master loop. Set
-`AGENT_LOOP_MISSION_CYCLES` for finite repeated missions, or
-`AGENT_LOOP_PERPETUAL=1` for a perpetual local loop.
+The Ink TUI exposes the hierarchy as a mission-control panel. Prefix a prompt with `/mission` to route it through the master loop. Set `AGENT_LOOP_MISSION_CYCLES` for finite repeated missions, or `AGENT_LOOP_PERPETUAL=1` for a perpetual local loop.
 
-The Telegram adapter in `examples/telegram_agent.py` exposes a Codex-style
-controller around the same harness. It persists sessions, supports slash
-commands, and keeps explicit user shell commands separate from model-driven
-tool calls.
+The Telegram adapter in `examples/telegram_agent.py` exposes a Codex-style controller around the same harness. It persists sessions, supports slash commands, and keeps explicit user shell commands separate from model-driven tool calls.
 
 ```bash
 export TELEGRAM_BOT_TOKEN=...
@@ -303,10 +336,10 @@ export AGENT_LOOP_WORKDIR=/path/to/repo
 python3 examples/telegram_agent.py
 ```
 
-Useful Telegram commands:
+### Command Routing Protocol
 
 | Command | Purpose |
-| --- | --- |
+| :--- | :--- |
 | `/status` | Show thread id, model, cwd, permission mode, tools, and plan |
 | `/permissions read-only\|workspace\|full-access` | Switch Codex-style permission mode |
 | `/model <name>` | Switch the active tool-calling model |
@@ -320,23 +353,21 @@ Useful Telegram commands:
 | `/tools`, `/mcp`, `/help` | Inspect available capabilities |
 | `/confirm <code>` | Pair this Telegram chat (printed on bot startup) |
 
-The controller code lives in `agent_loop.telegram.TelegramCodexAgent`, so tests
-and other chat surfaces can reuse the command router without calling Telegram.
+The controller code lives in `agent_loop.telegram.TelegramCodexAgent`, so tests and other chat surfaces can reuse the command router without calling Telegram.
 
-On first run the bot prints a pairing code. Only the paired chat (or
-`AGENT_LOOP_TELEGRAM_CHAT_ID`) can drive the agent.
+On first run the bot prints a pairing code. Only the paired chat (or `AGENT_LOOP_TELEGRAM_CHAT_ID`) can drive the agent.
 
-### MCP tools
+---
 
-Copy `examples/mcp.example.json` to `~/.agent-loop/mcp.json` and register
-handlers with `CallableMcpClient`, or point `AGENT_LOOP_MCP_URL` at an HTTP
-bridge that accepts `POST /call` with `{server, tool, arguments}`.
+### MCP Tools
 
-MCP tools are exposed to the model as `mcp__<server>__<tool>` executors and
-show up in `/mcp`.
+Copy `examples/mcp.example.json` to `~/.agent-loop/mcp.json` and register handlers with `CallableMcpClient`, or point `AGENT_LOOP_MCP_URL` at an HTTP bridge that accepts `POST /call` with `{server, tool, arguments}`.
 
-The harness also injects `AGENTS.md` and a short git status into the system
-prompt automatically when present in the workspace.
+MCP tools are exposed to the model as `mcp__<server>__<tool>` executors and show up in `/mcp`.
+
+The harness also injects `AGENTS.md` and a short git status into the system prompt automatically when present in the workspace.
+
+---
 
 ## License
 
