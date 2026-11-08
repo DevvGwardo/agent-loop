@@ -14,3 +14,7 @@ env/
 
 # local secrets
 .env
+
+# node deps and local tooling
+node_modules/
+.claude/

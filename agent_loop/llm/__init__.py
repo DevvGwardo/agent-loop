@@ -18,6 +18,8 @@ from .chat import (
     OpenAICompatibleChatClient,
     ToolCallRequest,
 )
+from .commands import CommandResult, handle_command, is_command
+from .config import load_config, save_config
 from .providers import (
     AnthropicProvider,
     LLMResponse,
@@ -46,4 +48,9 @@ __all__ = [
     "ToolCallRequest",
     "AUTO_PROVIDERS",
     "detect_chat_client",
+    "CommandResult",
+    "handle_command",
+    "is_command",
+    "load_config",
+    "save_config",
 ]

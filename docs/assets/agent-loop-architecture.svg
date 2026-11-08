@@ -1,116 +1,280 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="760" viewBox="0 0 1600 760" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 820" width="1600" height="820" role="img" aria-labelledby="title desc">
   <title id="title">agent-loop architecture diagram</title>
-  <desc id="desc">A flow diagram showing request intake, planning, approval, dispatch, execution, streaming updates, completion, and supporting MCP cache and lazy context systems.</desc>
+  <desc id="desc">Streaming AI coding agent protocol architecture with approval gating, execution lifecycle, and contextual cache systems.</desc>
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#071118"/>
-      <stop offset="100%" stop-color="#0c1722"/>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#040911"/>
+      <stop offset="50%" stop-color="#071220"/>
+      <stop offset="100%" stop-color="#030810"/>
     </linearGradient>
-    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#27d7ff"/>
-      <stop offset="100%" stop-color="#18a8ff"/>
+
+    <!-- Node Glow & Card Gradients -->
+    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f0ff"/>
+      <stop offset="100%" stop-color="#0072ff"/>
     </linearGradient>
-    <linearGradient id="warm" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#ffd66d"/>
-      <stop offset="100%" stop-color="#ffb84d"/>
+    <linearGradient id="amberGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffd166"/>
+      <stop offset="100%" stop-color="#ff8c00"/>
     </linearGradient>
-    <filter id="softGlow" x="-40%" y="-40%" width="180%" height="180%">
-      <feGaussianBlur stdDeviation="10" result="blur"/>
-      <feColorMatrix in="blur" type="matrix" values="
-        1 0 0 0 0
-        0 1 0 0 0
-        0 0 1 0 0
-        0 0 0 0.55 0" result="glow"/>
+    <linearGradient id="emeraldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f5d4"/>
+      <stop offset="100%" stop-color="#019875"/>
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="rgba(13, 27, 46, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(8, 17, 30, 0.95)"/>
+    </linearGradient>
+    <linearGradient id="cardAmberGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="rgba(38, 26, 12, 0.85)"/>
+      <stop offset="100%" stop-color="rgba(20, 14, 6, 0.95)"/>
+    </linearGradient>
+
+    <!-- Grid Pattern -->
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(0, 240, 255, 0.04)" stroke-width="1"/>
+      <circle cx="40" cy="40" r="1" fill="rgba(0, 240, 255, 0.12)"/>
+    </pattern>
+
+    <!-- Glow Filters -->
+    <filter id="neonGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
       <feMerge>
-        <feMergeNode in="glow"/>
+        <feMergeNode in="blur"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
-    <marker id="arrow" markerWidth="14" markerHeight="14" refX="10" refY="7" orient="auto" markerUnits="strokeWidth">
-      <path d="M0,0 L14,7 L0,14 z" fill="#8adfff"/>
+    <filter id="ambientGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="60" result="blur"/>
+    </filter>
+
+    <!-- Markers -->
+    <marker id="arrowCyan" markerWidth="10" markerHeight="10" refX="7" refY="5" orient="auto">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#00f0ff"/>
     </marker>
-    <marker id="arrowWarm" markerWidth="14" markerHeight="14" refX="10" refY="7" orient="auto" markerUnits="strokeWidth">
-      <path d="M0,0 L14,7 L0,14 z" fill="#ffcc6a"/>
+    <marker id="arrowAmber" markerWidth="10" markerHeight="10" refX="7" refY="5" orient="auto">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#ffd166"/>
     </marker>
+    <marker id="arrowEmerald" markerWidth="10" markerHeight="10" refX="7" refY="5" orient="auto">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#00f5d4"/>
+    </marker>
+
     <style>
-      .label { font: 600 28px Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #e8f7ff; }
-      .small { font: 500 18px Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #a9c8d8; }
-      .tiny { font: 500 16px Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #9dc5d9; }
-      .node { fill: rgba(11, 26, 38, 0.96); stroke: rgba(110, 215, 255, 0.45); stroke-width: 2.5; }
-      .nodeWarm { fill: rgba(38, 27, 10, 0.96); stroke: rgba(255, 208, 94, 0.7); stroke-width: 2.5; }
-      .panel { fill: rgba(7, 17, 24, 0.82); stroke: rgba(110, 215, 255, 0.18); stroke-width: 1.5; }
-      .line { stroke: #8adfff; stroke-width: 4; fill: none; marker-end: url(#arrow); }
-      .lineWarm { stroke: #ffcc6a; stroke-width: 4; fill: none; marker-end: url(#arrowWarm); }
-      .dash { stroke-dasharray: 10 10; }
+      .brand-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; font-size: 28px; font-weight: 800; fill: #ffffff; letter-spacing: -0.5px; }
+      .brand-sub { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; font-size: 15px; font-weight: 400; fill: #799bbb; }
+      .node-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; font-size: 20px; font-weight: 700; fill: #f0faff; }
+      .node-amber-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; font-size: 20px; font-weight: 700; fill: #ffe8b3; }
+      .node-desc { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; font-size: 13px; font-weight: 500; fill: #8eaec9; }
+      .node-tag { font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+      .connector { stroke: #00f0ff; stroke-width: 2.5; fill: none; marker-end: url(#arrowCyan); }
+      .connector-amber { stroke: #ffd166; stroke-width: 2.5; fill: none; marker-end: url(#arrowAmber); }
+      .connector-emerald { stroke: #00f5d4; stroke-width: 2.5; fill: none; marker-end: url(#arrowEmerald); }
+      .dash-line { stroke-dasharray: 6 6; stroke-width: 1.5; stroke: rgba(0, 240, 255, 0.4); fill: none; }
     </style>
   </defs>
 
-  <rect width="1600" height="760" rx="36" fill="url(#bg)"/>
-  <circle cx="1060" cy="160" r="280" fill="#0d2433" opacity="0.2" filter="url(#softGlow)"/>
-  <circle cx="260" cy="590" r="250" fill="#11263b" opacity="0.18" filter="url(#softGlow)"/>
+  <!-- Deep Canvas Background -->
+  <rect width="1600" height="820" rx="24" fill="url(#bgGrad)"/>
+  <rect width="1600" height="820" rx="24" fill="url(#grid)"/>
 
-  <text x="80" y="88" class="label">agent-loop architecture</text>
-  <text x="80" y="126" class="small">A streaming AI coding agent protocol with approval, execution, and cached tool metadata.</text>
+  <!-- Subtle Cybernetic Glow Orbs -->
+  <circle cx="200" cy="180" r="160" fill="#0072ff" opacity="0.12" filter="url(#ambientGlow)"/>
+  <circle cx="1100" cy="220" r="220" fill="#00f0ff" opacity="0.08" filter="url(#ambientGlow)"/>
+  <circle cx="750" cy="540" r="180" fill="#00d2d3" opacity="0.07" filter="url(#ambientGlow)"/>
+  <circle cx="950" cy="300" r="130" fill="#ff9f43" opacity="0.09" filter="url(#ambientGlow)"/>
 
-  <rect x="86" y="180" width="220" height="110" rx="22" class="node"/>
-  <text x="196" y="227" text-anchor="middle" class="label">LLM</text>
-  <text x="196" y="258" text-anchor="middle" class="tiny">user request</text>
+  <!-- Outer Blueprint Border -->
+  <rect x="24" y="24" width="1552" height="772" rx="20" fill="none" stroke="rgba(0, 240, 255, 0.15)" stroke-width="1.5"/>
 
-  <rect x="350" y="180" width="220" height="110" rx="22" class="node"/>
-  <text x="460" y="227" text-anchor="middle" class="label">Plan</text>
-  <text x="460" y="258" text-anchor="middle" class="tiny">reasoning + intent</text>
+  <!-- ==================== HEADER ==================== -->
+  <g transform="translate(60, 52)">
+    <!-- Hermes Brand Logo Mark (Infinity Wings Emblem) -->
+    <g transform="translate(0, 4) scale(0.75)" filter="url(#neonGlow)">
+      <!-- Stylized Wings -->
+      <path d="M 0 18 C 12 6, 28 2, 42 10 C 32 16, 26 24, 20 32 Z" fill="#00f0ff" opacity="0.9"/>
+      <path d="M 8 28 C 18 18, 32 14, 46 22 C 38 27, 32 34, 28 40 Z" fill="#00c8ff" opacity="0.7"/>
+      <!-- Infinity Loop Core -->
+      <path d="M 32 26 C 45 12, 65 12, 78 26 C 91 40, 111 40, 124 26 C 137 12, 157 12, 170 26 C 183 40, 163 54, 150 40 C 137 26, 117 26, 104 40 C 91 54, 71 54, 58 40 C 45 26, 25 26, 12 40 Z" 
+            fill="none" stroke="url(#cyanGrad)" stroke-width="6" stroke-linecap="round"/>
+      <!-- Algorithmic Nodes -->
+      <circle cx="170" cy="26" r="4.5" fill="#ffffff"/>
+      <circle cx="32" cy="26" r="4.5" fill="#00f0ff"/>
+    </g>
 
-  <rect x="614" y="180" width="260" height="110" rx="22" class="nodeWarm"/>
-  <text x="744" y="224" text-anchor="middle" class="label">ToolCall</text>
-  <text x="744" y="256" text-anchor="middle" class="tiny">description + approval</text>
+    <!-- Header Text -->
+    <text x="160" y="32" class="brand-title">AGENT-LOOP <tspan fill="#00f0ff" font-weight="300">//</tspan> ARCHITECTURE</text>
+    <text x="160" y="58" class="brand-sub">Streaming AI coding agent protocol with approval gating, live incremental feedback, and cached tool state.</text>
 
-  <rect x="926" y="180" width="220" height="110" rx="22" class="node"/>
-  <text x="1036" y="227" text-anchor="middle" class="label">Gate</text>
-  <text x="1036" y="258" text-anchor="middle" class="tiny">approval check</text>
+    <!-- Protocol Badges -->
+    <g transform="translate(1160, 12)">
+      <rect x="0" y="0" width="108" height="28" rx="14" fill="rgba(0, 240, 255, 0.08)" stroke="rgba(0, 240, 255, 0.4)" stroke-width="1"/>
+      <text x="54" y="18" text-anchor="middle" class="node-tag" fill="#00f0ff">PROTOCOL v1</text>
+      <rect x="118" y="0" width="128" height="28" rx="14" fill="rgba(0, 245, 212, 0.08)" stroke="rgba(0, 245, 212, 0.4)" stroke-width="1"/>
+      <text x="182" y="18" text-anchor="middle" class="node-tag" fill="#00f5d4">STREAMING</text>
+    </g>
+  </g>
 
-  <rect x="1190" y="180" width="320" height="110" rx="22" class="node"/>
-  <text x="1350" y="224" text-anchor="middle" class="label">Dispatcher</text>
-  <text x="1350" y="256" text-anchor="middle" class="tiny">routes to the right executor</text>
+  <!-- ==================== TOP ROW: INTAKE, PLANNING & GATE ==================== -->
+  
+  <!-- 1. LLM INTAKE -->
+  <g transform="translate(60, 150)">
+    <rect width="210" height="135" rx="16" fill="url(#cardGrad)" stroke="rgba(0, 240, 255, 0.4)" stroke-width="1.5"/>
+    <rect x="1" y="1" width="208" height="4" rx="2" fill="url(#cyanGrad)"/>
+    <text x="22" y="36" class="node-tag" fill="#00f0ff">STAGE 01</text>
+    <text x="22" y="66" class="node-title">LLM Agent</text>
+    <text x="22" y="94" class="node-desc">Receives user intent &amp;</text>
+    <text x="22" y="114" class="node-desc">system prompt instructions</text>
+  </g>
 
-  <rect x="1120" y="388" width="390" height="132" rx="24" class="node"/>
-  <text x="1315" y="434" text-anchor="middle" class="label">Executor</text>
-  <text x="1315" y="468" text-anchor="middle" class="tiny">shell • read • edit • MCP • browser</text>
-  <text x="1315" y="494" text-anchor="middle" class="tiny">streams stdout, stderr, and progress</text>
+  <!-- Connector 1 -> 2 -->
+  <path d="M 270 217 L 338 217" class="connector"/>
 
-  <rect x="650" y="388" width="390" height="132" rx="24" class="node"/>
-  <text x="845" y="434" text-anchor="middle" class="label">Streaming updates</text>
-  <text x="845" y="468" text-anchor="middle" class="tiny">started</text>
-  <text x="845" y="494" text-anchor="middle" class="tiny">delta</text>
-  <text x="845" y="520" text-anchor="middle" class="tiny">completed</text>
+  <!-- 2. PLAN / REASONING -->
+  <g transform="translate(340, 150)">
+    <rect width="210" height="135" rx="16" fill="url(#cardGrad)" stroke="rgba(0, 240, 255, 0.4)" stroke-width="1.5"/>
+    <rect x="1" y="1" width="208" height="4" rx="2" fill="url(#cyanGrad)"/>
+    <text x="22" y="36" class="node-tag" fill="#00f0ff">STAGE 02</text>
+    <text x="22" y="66" class="node-title">Plan &amp; Intent</text>
+    <text x="22" y="94" class="node-desc">Synthesizes steps,</text>
+    <text x="22" y="114" class="node-desc">constructs tool payload</text>
+  </g>
 
-  <rect x="300" y="388" width="260" height="132" rx="24" class="nodeWarm"/>
-  <text x="430" y="434" text-anchor="middle" class="label">Result</text>
-  <text x="430" y="468" text-anchor="middle" class="tiny">ToolCallCompleted</text>
-  <text x="430" y="494" text-anchor="middle" class="tiny">next turn begins</text>
+  <!-- Connector 2 -> 3 -->
+  <path d="M 550 217 L 618 217" class="connector"/>
 
-  <rect x="86" y="388" width="180" height="132" rx="24" class="node"/>
-  <text x="176" y="434" text-anchor="middle" class="label">LLM</text>
-  <text x="176" y="468" text-anchor="middle" class="tiny">receives full result</text>
-  <text x="176" y="494" text-anchor="middle" class="tiny">and plans again</text>
+  <!-- 3. TOOL CALL SPEC -->
+  <g transform="translate(620, 150)">
+    <rect width="230" height="135" rx="16" fill="url(#cardGrad)" stroke="rgba(0, 240, 255, 0.4)" stroke-width="1.5"/>
+    <rect x="1" y="1" width="228" height="4" rx="2" fill="url(#cyanGrad)"/>
+    <text x="22" y="36" class="node-tag" fill="#00f0ff">STAGE 03</text>
+    <text x="22" y="66" class="node-title">ToolCall Event</text>
+    <text x="22" y="94" class="node-desc">name, args, description,</text>
+    <text x="22" y="114" class="node-desc">target path &amp; call ID</text>
+  </g>
 
-  <path d="M306 235 L350 235" class="line"/>
-  <path d="M570 235 L614 235" class="line"/>
-  <path d="M874 235 L926 235" class="line"/>
-  <path d="M1146 235 L1190 235" class="line"/>
-  <path d="M1350 290 L1350 388" class="line"/>
-  <path d="M1120 454 L1040 454" class="line"/>
-  <path d="M650 454 L560 454" class="lineWarm"/>
-  <path d="M300 454 L266 454" class="line"/>
+  <!-- Connector 3 -> 4 -->
+  <path d="M 850 217 L 918 217" class="connector-amber"/>
 
-  <rect x="240" y="578" width="460" height="98" rx="20" class="panel"/>
-  <text x="270" y="620" class="label" font-size="24">MCP snapshot cache</text>
-  <text x="270" y="651" class="small">tool definitions are cached and refreshed only when generations change</text>
+  <!-- 4. GATE / APPROVAL (AMBER GATED) -->
+  <g transform="translate(920, 150)">
+    <rect width="240" height="135" rx="16" fill="url(#cardAmberGrad)" stroke="rgba(255, 209, 102, 0.6)" stroke-width="2"/>
+    <rect x="1" y="1" width="238" height="4" rx="2" fill="url(#amberGrad)"/>
+    <text x="22" y="36" class="node-tag" fill="#ffd166">SECURITY GATE</text>
+    <text x="22" y="66" class="node-amber-title">Approval Gate</text>
+    <text x="22" y="94" class="node-desc" fill="#e0c28e">needs_approval verification</text>
+    <text x="22" y="114" class="node-desc" fill="#e0c28e">Human-in-the-loop allow / deny</text>
+  </g>
 
-  <rect x="786" y="578" width="560" height="98" rx="20" class="panel"/>
-  <text x="816" y="620" class="label" font-size="24">Lazy-loaded request context</text>
-  <text x="816" y="651" class="small">context sections load on demand so each turn sends only what is needed</text>
+  <!-- Connector 4 -> 5 -->
+  <path d="M 1160 217 L 1228 217" class="connector"/>
 
-  <path d="M700 628 C760 628, 790 628, 820 628" class="line dash"/>
-  <path d="M922 578 C922 536, 922 528, 922 520" class="line dash"/>
-  <path d="M470 578 C470 530, 470 520, 470 520" class="line dash"/>
+  <!-- 5. DISPATCHER -->
+  <g transform="translate(1230, 150)">
+    <rect width="270" height="135" rx="16" fill="url(#cardGrad)" stroke="rgba(0, 240, 255, 0.4)" stroke-width="1.5"/>
+    <rect x="1" y="1" width="268" height="4" rx="2" fill="url(#cyanGrad)"/>
+    <text x="22" y="36" class="node-tag" fill="#00f0ff">STAGE 04</text>
+    <text x="22" y="66" class="node-title">Tool Dispatcher</text>
+    <text x="22" y="94" class="node-desc">Validates against schema &amp;</text>
+    <text x="22" y="114" class="node-desc">routes to targeted executor</text>
+  </g>
+
+  <!-- ==================== CONNECTOR TOP TO BOTTOM ==================== -->
+  <path d="M 1365 285 L 1365 375" class="connector"/>
+
+  <!-- ==================== BOTTOM ROW: EXECUTION & STREAMING ==================== -->
+
+  <!-- 6. EXECUTOR CLUSTER -->
+  <g transform="translate(1150, 380)">
+    <rect width="350" height="160" rx="18" fill="url(#cardGrad)" stroke="rgba(0, 240, 255, 0.45)" stroke-width="1.5"/>
+    <rect x="1" y="1" width="348" height="4" rx="2" fill="url(#cyanGrad)"/>
+    <text x="24" y="36" class="node-tag" fill="#00f0ff">EXECUTION ENVIRONMENT</text>
+    <text x="24" y="68" class="node-title">Tool Executors</text>
+    <g transform="translate(24, 88)">
+      <rect x="0" y="0" width="60" height="24" rx="6" fill="rgba(0, 240, 255, 0.1)"/>
+      <text x="30" y="16" text-anchor="middle" class="node-tag" fill="#00f0ff">SHELL</text>
+      <rect x="68" y="0" width="56" height="24" rx="6" fill="rgba(0, 240, 255, 0.1)"/>
+      <text x="96" y="16" text-anchor="middle" class="node-tag" fill="#00f0ff">READ</text>
+      <rect x="132" y="0" width="56" height="24" rx="6" fill="rgba(0, 240, 255, 0.1)"/>
+      <text x="160" y="16" text-anchor="middle" class="node-tag" fill="#00f0ff">EDIT</text>
+      <rect x="196" y="0" width="52" height="24" rx="6" fill="rgba(0, 240, 255, 0.1)"/>
+      <text x="222" y="16" text-anchor="middle" class="node-tag" fill="#00f0ff">MCP</text>
+      <rect x="256" y="0" width="46" height="24" rx="6" fill="rgba(0, 240, 255, 0.1)"/>
+      <text x="279" y="16" text-anchor="middle" class="node-tag" fill="#00f0ff">WEB</text>
+    </g>
+    <text x="24" y="142" class="node-desc">Streams stdout, stderr, &amp; status live</text>
+  </g>
+
+  <!-- Connector 6 -> 7 -->
+  <path d="M 1150 460 L 1058 460" class="connector-emerald"/>
+
+  <!-- 7. STREAMING UPDATES ENGINE -->
+  <g transform="translate(680, 380)">
+    <rect width="370" height="160" rx="18" fill="url(#cardGrad)" stroke="rgba(0, 245, 212, 0.5)" stroke-width="1.5"/>
+    <rect x="1" y="1" width="368" height="4" rx="2" fill="url(#emeraldGrad)"/>
+    <text x="24" y="36" class="node-tag" fill="#00f5d4">ASYNC TELEMETRY</text>
+    <text x="24" y="68" class="node-title">Streaming Lifecycle</text>
+    <g transform="translate(24, 88)">
+      <circle cx="6" cy="7" r="4" fill="#00f0ff"/>
+      <text x="20" y="12" class="node-desc">ToolCallStartedEvent</text>
+      <circle cx="6" cy="27" r="4" fill="#00f5d4"/>
+      <text x="20" y="32" class="node-desc">ToolCallDeltaEvent (stdout/stderr chunks)</text>
+      <circle cx="6" cy="47" r="4" fill="#ffd166"/>
+      <text x="20" y="52" class="node-desc">ToolCallCompletedEvent (final result payload)</text>
+    </g>
+  </g>
+
+  <!-- Connector 7 -> 8 -->
+  <path d="M 680 460 L 598 460" class="connector-amber"/>
+
+  <!-- 8. RESULT SYNTHESIS -->
+  <g transform="translate(340, 380)">
+    <rect width="250" height="160" rx="18" fill="url(#cardAmberGrad)" stroke="rgba(255, 209, 102, 0.5)" stroke-width="1.5"/>
+    <rect x="1" y="1" width="248" height="4" rx="2" fill="url(#amberGrad)"/>
+    <text x="22" y="36" class="node-tag" fill="#ffd166">RESULT ENGINE</text>
+    <text x="22" y="68" class="node-amber-title">Turn Result</text>
+    <text x="22" y="98" class="node-desc" fill="#e0c28e">Assembles execution output,</text>
+    <text x="22" y="118" class="node-desc" fill="#e0c28e">calculates token metrics,</text>
+    <text x="22" y="138" class="node-desc" fill="#e0c28e">prepares next loop turn</text>
+  </g>
+
+  <!-- Connector 8 -> 9 -->
+  <path d="M 340 460 L 278 460" class="connector"/>
+
+  <!-- 9. LLM RE-ENGAGE (LOOP COMPLETION) -->
+  <g transform="translate(60, 380)">
+    <rect width="210" height="160" rx="18" fill="url(#cardGrad)" stroke="rgba(0, 240, 255, 0.45)" stroke-width="1.5"/>
+    <rect x="1" y="1" width="208" height="4" rx="2" fill="url(#cyanGrad)"/>
+    <text x="22" y="36" class="node-tag" fill="#00f0ff">LOOP FEEDBACK</text>
+    <text x="22" y="68" class="node-title">LLM Reasoning</text>
+    <text x="22" y="98" class="node-desc">Inspects tool output,</text>
+    <text x="22" y="118" class="node-desc">evaluates success,</text>
+    <text x="22" y="138" class="node-desc">decides next action / stops</text>
+  </g>
+
+  <!-- Return Loop Line: Stage 9 up to Stage 1 -->
+  <path d="M 165 380 L 165 295" class="connector" stroke-dasharray="6 6"/>
+
+  <!-- ==================== BOTTOM FOUNDATION SYSTEMS ==================== -->
+
+  <!-- MCP Snapshot Cache Panel -->
+  <g transform="translate(180, 620)">
+    <rect width="580" height="120" rx="16" fill="rgba(8, 20, 36, 0.7)" stroke="rgba(0, 240, 255, 0.25)" stroke-width="1.5"/>
+    <text x="28" y="36" class="node-tag" fill="#00f0ff">INFRASTRUCTURE CACHE</text>
+    <text x="28" y="68" class="node-title">MCP Snapshot Cache</text>
+    <text x="28" y="96" class="brand-sub">External tool definitions &amp; schema schemas are cached with generational invalidation.</text>
+  </g>
+
+  <!-- Lazy-Loaded Request Context Panel -->
+  <g transform="translate(840, 620)">
+    <rect width="580" height="120" rx="16" fill="rgba(8, 20, 36, 0.7)" stroke="rgba(0, 240, 255, 0.25)" stroke-width="1.5"/>
+    <text x="28" y="36" class="node-tag" fill="#00f5d4">CONTEXT SYSTEM</text>
+    <text x="28" y="68" class="node-title">Lazy-Loaded Request Context</text>
+    <text x="28" y="96" class="brand-sub">Sections hydrate on-demand so every turn transmits strictly necessary context tokens.</text>
+  </g>
+
+  <!-- Foundation Connectors -->
+  <path d="M 470 620 L 470 545" class="dash-line" marker-end="url(#arrowCyan)"/>
+  <path d="M 1130 620 L 1130 545" class="dash-line" marker-end="url(#arrowEmerald)"/>
+
 </svg>

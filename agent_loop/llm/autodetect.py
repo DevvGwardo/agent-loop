@@ -10,6 +10,7 @@ from __future__ import annotations
 import os
 
 from .chat import OpenAICompatibleChatClient
+from .config import load_config, provider_entry, resolve_api_key
 
 # (api_key_env, base_url, default_model, label) ordered by detection priority.
 AUTO_PROVIDERS: list[tuple[str, str, str, str]] = [
@@ -37,6 +38,24 @@ def detect_chat_client(
 
     model = model or os.environ.get("AGENT_LOOP_MODEL")
     base_url = base_url or os.environ.get("AGENT_LOOP_BASE_URL")
+
+    # Persisted config (~/.agent-loop/config.json) wins over env autodetect,
+    # mirroring hermes-agent's `model.default` / `model.provider` keys.
+    if not model:
+        cfg = load_config()
+        model_cfg = cfg.get("model")
+        if isinstance(model_cfg, dict) and model_cfg.get("default"):
+            slug = model_cfg.get("provider") or "openai"
+            entry = provider_entry(cfg, slug) or {}
+            api_key = resolve_api_key(entry)
+            return (
+                OpenAICompatibleChatClient(
+                    model=model_cfg["default"],
+                    api_key=api_key,
+                    base_url=model_cfg.get("base_url") or entry.get("base_url") or "https://api.openai.com/v1",
+                ),
+                f"{slug}:{model_cfg['default']}",
+            )
 
     if model:
         return (
